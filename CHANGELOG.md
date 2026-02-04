@@ -1,3 +1,10 @@
+## v0.3.0 (2026-02-05)
+
+### Feat
+
+- enhance MCP server with AI agent assistance
+- add waterfall stage tracking system
+
 ## v0.2.0 (2026-02-04)
 
 ### BREAKING CHANGE
