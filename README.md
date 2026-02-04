@@ -52,6 +52,12 @@ python -m ai_dev_graph.cli db info         # Info de la BD
 python -m ai_dev_graph.cli db backup       # Backup de BD
 python -m ai_dev_graph.cli db export       # Exportar a JSON
 python -m ai_dev_graph.cli db import FILE  # Importar desde JSON
+
+# Waterfall tracking
+python -m ai_dev_graph.cli wf start ID "Title"  # Iniciar feature
+python -m ai_dev_graph.cli wf status            # Ver estado
+python -m ai_dev_graph.cli wf advance ID        # Avanzar etapa
+python -m ai_dev_graph.cli wf list              # Listar features
 ```
 
 ### 📦 GraphManager Avanzado
@@ -96,9 +102,29 @@ curl -X POST http://localhost:8000/nodes \
   }'
 ```
 
+## 🌊 Metodología de Cascada
+
+El proyecto implementa un **flujo de desarrollo en cascada con implementación continua**:
+
+1. **ANALYSIS** → 2. **DESIGN** → 3. **IMPLEMENTATION** → 4. **TESTING** → 5. **DOCUMENTATION** → 6. **RELEASE** → 7. **COMPLETED**
+
+### Tracking de Progreso
+
+```bash
+# Iniciar feature
+python -m ai_dev_graph.cli wf start my_feature "Description"
+
+# Avanzar etapa
+python -m ai_dev_graph.cli wf advance my_feature
+```
+
+**Regla**: No saltar etapas. Ver [docs/WATERFALL_TRACKING.md](docs/WATERFALL_TRACKING.md)
+
 ## 📖 Documentación
 
 - [Guía Completa](docs/USAGE.md) - Tutorial completo y ejemplos
+- [Waterfall Tracking](docs/WATERFALL_TRACKING.md) - Sistema de gestión de etapas
+- [Database](docs/DATABASE.md) - Persistencia con SQLite
 - [API Reference](docs/index.md) - Documentación técnica
 - [Tests](tests/) - Ejemplos de uso
 

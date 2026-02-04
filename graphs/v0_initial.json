@@ -83,9 +83,94 @@
         "metadata": {}
       },
       "id": "rule_node_quality"
+    },
+    {
+      "data": {
+        "id": "waterfall_methodology",
+        "type": "concept",
+        "content": "Metodología de desarrollo en cascada con implementación continua. Cada feature sigue un flujo estricto: Análisis → Diseño → Implementación → Testing → Documentación → Release. No se avanza a la siguiente etapa sin completar la anterior.",
+        "metadata": {}
+      },
+      "id": "waterfall_methodology"
+    },
+    {
+      "data": {
+        "id": "stage_analysis",
+        "type": "rule",
+        "content": "ANÁLISIS: Definir requisitos, objetivos y alcance. Identificar dependencias y riesgos. Consultar el grafo de conocimiento para asegurar coherencia con la arquitectura existente.",
+        "metadata": {}
+      },
+      "id": "stage_analysis"
+    },
+    {
+      "data": {
+        "id": "stage_design",
+        "type": "rule",
+        "content": "DISEÑO: Crear arquitectura y especificaciones técnicas. Definir interfaces, modelos de datos y flujos. Documentar decisiones de diseño en el grafo.",
+        "metadata": {}
+      },
+      "id": "stage_design"
+    },
+    {
+      "data": {
+        "id": "stage_implementation",
+        "type": "rule",
+        "content": "IMPLEMENTACIÓN: Escribir código siguiendo los estándares definidos. Implementar tests unitarios en paralelo. Hacer commits frecuentes con conventional commits.",
+        "metadata": {}
+      },
+      "id": "stage_implementation"
+    },
+    {
+      "data": {
+        "id": "stage_testing",
+        "type": "rule",
+        "content": "TESTING: Ejecutar suite completa de tests (unitarios, integración, e2e). Verificar cobertura mínima. Validar contra requisitos del análisis.",
+        "metadata": {}
+      },
+      "id": "stage_testing"
+    },
+    {
+      "data": {
+        "id": "stage_documentation",
+        "type": "rule",
+        "content": "DOCUMENTACIÓN: Actualizar README, docs técnicos y comentarios. Añadir nodos al grafo con conocimiento generado. Generar changelog con commitizen.",
+        "metadata": {}
+      },
+      "id": "stage_documentation"
+    },
+    {
+      "data": {
+        "id": "stage_release",
+        "type": "rule",
+        "content": "RELEASE: Bump de versión con commitizen. Tag en git. Backup de base de datos. Validación final de integridad del grafo.",
+        "metadata": {}
+      },
+      "id": "stage_release"
+    },
+    {
+      "data": {
+        "id": "rule_no_skip_stages",
+        "type": "rule",
+        "content": "PROHIBIDO saltar etapas de la cascada. Cada etapa debe completarse antes de pasar a la siguiente. Si se detecta un error en una etapa anterior, se debe retroceder y corregir.",
+        "metadata": {}
+      },
+      "id": "rule_no_skip_stages"
+    },
+    {
+      "data": {
+        "id": "instruction_track_progress",
+        "type": "instruction",
+        "content": "Usar el sistema de tracking de cascada para registrar en qué etapa se encuentra cada feature. Actualizar el estado al completar cada etapa. Consultar el estado antes de iniciar trabajo nuevo.",
+        "metadata": {}
+      },
+      "id": "instruction_track_progress"
     }
   ],
   "edges": [
+    {
+      "source": "ai_dev_graph",
+      "target": "maintenance_policy"
+    },
     {
       "source": "ai_dev_graph",
       "target": "philosophy"
@@ -95,8 +180,8 @@
       "target": "version_control"
     },
     {
-      "source": "ai_dev_graph",
-      "target": "maintenance_policy"
+      "source": "philosophy",
+      "target": "agent_instruction"
     },
     {
       "source": "philosophy",
@@ -108,7 +193,7 @@
     },
     {
       "source": "philosophy",
-      "target": "agent_instruction"
+      "target": "waterfall_methodology"
     },
     {
       "source": "coding_standards",
@@ -117,6 +202,38 @@
     {
       "source": "maintenance_policy",
       "target": "rule_node_quality"
+    },
+    {
+      "source": "waterfall_methodology",
+      "target": "stage_analysis"
+    },
+    {
+      "source": "waterfall_methodology",
+      "target": "stage_design"
+    },
+    {
+      "source": "waterfall_methodology",
+      "target": "stage_implementation"
+    },
+    {
+      "source": "waterfall_methodology",
+      "target": "stage_testing"
+    },
+    {
+      "source": "waterfall_methodology",
+      "target": "stage_documentation"
+    },
+    {
+      "source": "waterfall_methodology",
+      "target": "stage_release"
+    },
+    {
+      "source": "waterfall_methodology",
+      "target": "rule_no_skip_stages"
+    },
+    {
+      "source": "waterfall_methodology",
+      "target": "instruction_track_progress"
     }
   ]
 }

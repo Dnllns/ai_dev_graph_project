@@ -207,6 +207,122 @@ def cmd_db(args):
         print(f"\\n✓ Graph imported from: {args.json_file}")
 
 
+def cmd_waterfall(args):
+    """Waterfall tracking commands."""
+    from ai_dev_graph.waterfall_tracker import WaterfallTracker, WaterfallStage
+    
+    tracker = WaterfallTracker()
+    
+    if args.wf_action == "start":
+        feature = tracker.start_feature(args.feature_id, args.title)
+        print(f"\n🚀 Started tracking feature: {feature.feature_id}")
+        print(f"Title: {feature.title}")
+        print(f"Stage: {feature.current_stage.value.upper()}")
+        print(f"Started: {feature.started_at}\n")
+    
+    elif args.wf_action == "status":
+        if args.feature:
+            feature = tracker.get_feature(args.feature)
+            if not feature:
+                print(f"\n❌ Feature not found: {args.feature}\n")
+                return
+            
+            print(f"\n📍 FEATURE STATUS: {feature.feature_id}")
+            print("=" * 60)
+            print(f"Title: {feature.title}")
+            print(f"Current Stage: {feature.current_stage.value.upper()}")
+            print(f"Started: {feature.started_at}")
+            print(f"Last Updated: {feature.updated_at}")
+            
+            if feature.stage_history:
+                print("\n📋 Completed Stages:")
+                for entry in feature.stage_history:
+                    print(f"  ✅ {entry['stage'].upper()} - {entry['completed_at']}")
+            
+            if feature.notes:
+                print(f"\n📝 Notes:\n{feature.notes}")
+            print()
+        else:
+            current = tracker.get_current_feature()
+            if not current:
+                print("\n❌ No features being tracked.\n")
+                return
+            
+            print(f"\n📍 CURRENT FEATURE: {current.feature_id}")
+            print("=" * 60)
+            print(f"Title: {current.title}")
+            print(f"Stage: {current.current_stage.value.upper()}")
+            print(f"Updated: {current.updated_at}\n")
+    
+    elif args.wf_action == "advance":
+        feature = tracker.get_feature(args.feature_id)
+        if not feature:
+            print(f"\n❌ Feature not found: {args.feature_id}\n")
+            return
+        
+        old_stage = feature.current_stage.value
+        if tracker.advance_feature(args.feature_id):
+            feature = tracker.get_feature(args.feature_id)
+            print(f"\n✅ Advanced feature: {args.feature_id}")
+            print(f"   {old_stage.upper()} → {feature.current_stage.value.upper()}\n")
+        else:
+            print(f"\n❌ Cannot advance (already at final stage)\n")
+    
+    elif args.wf_action == "regress":
+        feature = tracker.get_feature(args.feature_id)
+        if not feature:
+            print(f"\n❌ Feature not found: {args.feature_id}\n")
+            return
+        
+        old_stage = feature.current_stage.value
+        reason = args.reason or "Issues found"
+        if tracker.regress_feature(args.feature_id, reason):
+            feature = tracker.get_feature(args.feature_id)
+            print(f"\n⚠️  Regressed feature: {args.feature_id}")
+            print(f"   {old_stage.upper()} → {feature.current_stage.value.upper()}")
+            print(f"   Reason: {reason}\n")
+        else:
+            print(f"\n❌ Cannot regress (already at first stage)\n")
+    
+    elif args.wf_action == "note":
+        if tracker.get_feature(args.feature_id):
+            tracker.update_notes(args.feature_id, args.note)
+            print(f"\n✓ Note added to {args.feature_id}\n")
+        else:
+            print(f"\n❌ Feature not found: {args.feature_id}\n")
+    
+    elif args.wf_action == "list":
+        stage_filter = WaterfallStage(args.stage) if args.stage else None
+        features = tracker.list_features(stage=stage_filter)
+        
+        if not features:
+            print("\n📋 No features found.\n")
+            return
+        
+        print(f"\n📋 FEATURES ({len(features)})")
+        print("=" * 80)
+        
+        for f in features:
+            status_icon = "🔄" if f.current_stage.value != "completed" else "✅"
+            print(f"{status_icon} {f.feature_id}")
+            print(f"   Title: {f.title}")
+            print(f"   Stage: {f.current_stage.value.upper()}")
+            print(f"   Updated: {f.updated_at}")
+            print()
+    
+    elif args.wf_action == "stats":
+        stats = tracker.get_stats()
+        print("\n📊 WATERFALL STATISTICS")
+        print("=" * 50)
+        print(f"Total Features: {stats['total_features']}")
+        print(f"Active Features: {stats['active_features']}")
+        print("\nBy Stage:")
+        for stage, count in stats['by_stage'].items():
+            if count > 0:
+                print(f"  {stage.upper()}: {count}")
+        print()
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -286,6 +402,40 @@ Examples:
     db_import.add_argument('json_file', help='JSON file to import')
     db_import.add_argument('--clear', action='store_true', help='Clear existing data')
     db_import.set_defaults(func=cmd_db)
+    
+    # Waterfall tracker command
+    wf_parser = subparsers.add_parser('waterfall', aliases=['wf'], help='Waterfall stage tracking')
+    wf_subparsers = wf_parser.add_subparsers(dest='wf_action', help='Waterfall action')
+    
+    wf_start = wf_subparsers.add_parser('start', help='Start tracking new feature')
+    wf_start.add_argument('feature_id', help='Feature identifier')
+    wf_start.add_argument('title', help='Feature title')
+    wf_start.set_defaults(func=cmd_waterfall)
+    
+    wf_status = wf_subparsers.add_parser('status', help='Show current status')
+    wf_status.add_argument('--feature', help='Specific feature ID')
+    wf_status.set_defaults(func=cmd_waterfall)
+    
+    wf_advance = wf_subparsers.add_parser('advance', help='Advance to next stage')
+    wf_advance.add_argument('feature_id', help='Feature to advance')
+    wf_advance.set_defaults(func=cmd_waterfall)
+    
+    wf_regress = wf_subparsers.add_parser('regress', help='Go back to previous stage')
+    wf_regress.add_argument('feature_id', help='Feature to regress')
+    wf_regress.add_argument('--reason', help='Reason for regression')
+    wf_regress.set_defaults(func=cmd_waterfall)
+    
+    wf_note = wf_subparsers.add_parser('note', help='Add note to feature')
+    wf_note.add_argument('feature_id', help='Feature ID')
+    wf_note.add_argument('note', help='Note text')
+    wf_note.set_defaults(func=cmd_waterfall)
+    
+    wf_list = wf_subparsers.add_parser('list', help='List all features')
+    wf_list.add_argument('--stage', help='Filter by stage')
+    wf_list.set_defaults(func=cmd_waterfall)
+    
+    wf_stats = wf_subparsers.add_parser('stats', help='Show statistics')
+    wf_stats.set_defaults(func=cmd_waterfall)
     
     
     args = parser.parse_args()
