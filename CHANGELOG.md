@@ -1,5 +1,9 @@
-# Changelog
+## v0.2.0 (2026-02-04)
 
-## v0.1.0 (Initial)
+### BREAKING CHANGE
 
-- Estructura inicial del proyecto y definición del grafo base.
+- Graph storage migrated from JSON-only to SQLite database
+
+### Feat
+
+- initial implementation with database persistence
