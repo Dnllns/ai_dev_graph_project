@@ -1,0 +1,122 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "data": {
+        "id": "ai_dev_graph",
+        "type": "project",
+        "content": "Herramienta de almacenamiento de conocimiento para agentes IA en forma de grafo.",
+        "metadata": {}
+      },
+      "id": "ai_dev_graph"
+    },
+    {
+      "data": {
+        "id": "philosophy",
+        "type": "concept",
+        "content": "GRAFO, PYTHON, API, DOC, TEST.",
+        "metadata": {}
+      },
+      "id": "philosophy"
+    },
+    {
+      "data": {
+        "id": "coding_standards",
+        "type": "rule",
+        "content": "Uso de Python tipado, Pydantic para modelos y NetworkX para el grafo.",
+        "metadata": {}
+      },
+      "id": "coding_standards"
+    },
+    {
+      "data": {
+        "id": "version_control",
+        "type": "rule",
+        "content": "Uso obligatorio de Git y Commitizen para gestión de estados y changelogs.",
+        "metadata": {}
+      },
+      "id": "version_control"
+    },
+    {
+      "data": {
+        "id": "rule_must_test",
+        "type": "rule",
+        "content": "Todo código nuevo debe incluir tests automáticos que validen su funcionamiento. No se acepta código sin tests.",
+        "metadata": {}
+      },
+      "id": "rule_must_test"
+    },
+    {
+      "data": {
+        "id": "rule_raw_content",
+        "type": "rule",
+        "content": "Content must be raw text. No emojis. No fluff. High information density. Optimal for LLM consumption.",
+        "metadata": {}
+      },
+      "id": "rule_raw_content"
+    },
+    {
+      "data": {
+        "id": "maintenance_policy",
+        "type": "rule",
+        "content": "Limpieza proactiva: eliminar código no usado inmediatamente. Mantener el grafo sincronizado con la realidad del código.",
+        "metadata": {}
+      },
+      "id": "maintenance_policy"
+    },
+    {
+      "data": {
+        "id": "agent_instruction",
+        "type": "instruction",
+        "content": "Los agentes deben consultar el grafo antes de cada tarea para asegurar coherencia con la arquitectura y estándares.",
+        "metadata": {}
+      },
+      "id": "agent_instruction"
+    },
+    {
+      "data": {
+        "id": "rule_node_quality",
+        "type": "rule",
+        "content": "Solo añadir nodos que aporten valor real al grafo. Evitar nodos redundantes o temporales de testing. Cada nodo debe documentar conocimiento persistente y relevante.",
+        "metadata": {}
+      },
+      "id": "rule_node_quality"
+    }
+  ],
+  "edges": [
+    {
+      "source": "ai_dev_graph",
+      "target": "philosophy"
+    },
+    {
+      "source": "ai_dev_graph",
+      "target": "version_control"
+    },
+    {
+      "source": "ai_dev_graph",
+      "target": "maintenance_policy"
+    },
+    {
+      "source": "philosophy",
+      "target": "coding_standards"
+    },
+    {
+      "source": "philosophy",
+      "target": "rule_raw_content"
+    },
+    {
+      "source": "philosophy",
+      "target": "agent_instruction"
+    },
+    {
+      "source": "coding_standards",
+      "target": "rule_must_test"
+    },
+    {
+      "source": "maintenance_policy",
+      "target": "rule_node_quality"
+    }
+  ]
+}
