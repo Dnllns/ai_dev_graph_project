@@ -58,6 +58,13 @@ python -m ai_dev_graph.cli wf start ID "Title"  # Iniciar feature
 python -m ai_dev_graph.cli wf status            # Ver estado
 python -m ai_dev_graph.cli wf advance ID        # Avanzar etapa
 python -m ai_dev_graph.cli wf list              # Listar features
+
+# Enhanced MCP - AI Agent Assistance
+python -m ai_dev_graph.cli agent context       # Get dev context
+python -m ai_dev_graph.cli agent suggest       # Get suggestions
+python -m ai_dev_graph.cli agent validate "action"  # Validate action
+python -m ai_dev_graph.cli agent standards     #  Get coding standards
+python -m ai_dev_graph.cli agent export        # Export for AI
 ```
 
 ### 📦 GraphManager Avanzado
@@ -127,6 +134,36 @@ python -m ai_dev_graph.cli wf advance my_feature
 - [Database](docs/DATABASE.md) - Persistencia con SQLite
 - [API Reference](docs/index.md) - Documentación técnica
 - [Tests](tests/) - Ejemplos de uso
+
+## 🤖 Enhanced MCP - AI Agent Assistance
+
+El servidor MCP mejorado proporciona asistencia inteligente para desarrollo:
+
+```bash
+# Obtener contexto de desarrollo
+python -m ai_dev_graph.cli agent context
+
+# Ver acciones sugeridas basadas en etapa actual
+python -m ai_dev_graph.cli agent suggest
+
+# Validar acción contra reglas del grafo
+python -m ai_dev_graph.cli agent validate "skip testing"
+
+# Obtener estándares de código
+python -m ai_dev_graph.cli agent standards
+
+# Exportar contexto completo para AI
+python -m ai_dev_graph.cli agent export --type claude
+```
+
+**Features**:
+- 🎯 Contexto consciente de etapa waterfall
+- ✅ Validación contra reglas del grafo
+- 💡 Sugerencias priorizadas de próximas acciones
+- 📐 Acceso a estándares y metodología
+- 📤 Export optimizado para agentes AI
+
+Ver: [docs/ENHANCED_MCP.md](docs/ENHANCED_MCP.md)
 
 ## 🏗️ Arquitectura
 

@@ -8,6 +8,7 @@ Usage:
 
 import argparse
 import logging
+import json
 import sys
 import os
 from pathlib import Path
@@ -323,6 +324,120 @@ def cmd_waterfall(args):
         print()
 
 
+def cmd_agent(args):
+    """Enhanced MCP agent assistance commands."""
+    from ai_dev_graph.mcp_server import get_mcp_server
+    
+    mcp = get_mcp_server()
+    
+    if args.agent_action == "context":
+        # Get development context
+        task = args.task if hasattr(args, 'task') else "General development"
+        context = mcp.get_development_context(task)
+        
+        print("\n🤖 DEVELOPMENT CONTEXT")
+        print("=" * 70)
+        print(f"Task: {context['task']}")
+        print(f"Timestamp: {context['timestamp']}\n")
+        
+        # Current feature
+        feature = context['current_feature']
+        if feature['status'] == 'active':
+            print(f"📍 Current Feature: {feature['feature_id']}")
+            print(f"   Title: {feature['title']}")
+            print(f"   Stage: {feature['current_stage'].upper()}")
+            if feature.get('stage_guidance'):
+                print(f"\n   📋 Stage Guidance:")
+                print(f"   {feature['stage_guidance']['guidance']}")
+        else:
+            print(f"⚠️  {feature['message']}")
+        
+        # Validation
+        validation = context['validation']
+        print(f"\n✓ Validation: {'PASS' if validation['is_valid'] else 'FAIL'}")
+        if validation['violations']:
+            print("   Violations:")
+            for v in validation['violations']:
+                print(f"   - [{v['severity'].upper()}] {v['message']}")
+        
+        print()
+    
+    elif args.agent_action == "suggest":
+        # Get suggested actions
+        suggestions = mcp.suggest_next_actions()
+        
+        print("\n💡 SUGGESTED ACTIONS")
+        print("=" * 70)
+        
+        for i, sug in enumerate(suggestions, 1):
+            priority_icon = "🔴" if sug['priority'] == 'high' else "🟡"
+            print(f"\n{i}. {priority_icon} {sug['action'].upper()}")
+            print(f"   {sug['description']}")
+            print(f"   Command: {sug['command']}")
+        
+        print()
+    
+    elif args.agent_action == "validate":
+        # Validate action against rules
+        action = args.action if hasattr(args, 'action') else "unknown action"
+        result = mcp.validate_against_rules(action)
+        
+        print("\n🔍 VALIDATION RESULT")
+        print("=" * 70)
+        print(f"Action: {result['action']}")
+        print(f"Valid: {'✅ YES' if result['is_valid'] else '❌ NO'}\n")
+        
+        if result['violations']:
+            print("❌ Violations:")
+            for v in result['violations']:
+                print(f"   - {v['message']}")
+            print()
+        
+        if result['applicable_rules']:
+            print("📋 Applicable Rules:")
+            for r in result['applicable_rules']:
+                print(f"   - [{r['type']}] {r['content']}")
+            print()
+        
+        print(f"Recommendation: {result['recommendation']}\n")
+    
+    elif args.agent_action == "standards":
+        # Get coding standards
+        standards = mcp.get_coding_standards()
+        
+        print("\n📐 CODING STANDARDS")
+        print("=" * 70)
+        
+        if 'core' in standards and standards['core']:
+            print(f"\nCore Standards:\n{standards['core']}\n")
+        
+        if standards.get('rules'):
+            print("Rules:")
+            for rule in standards['rules'][:10]:  # Limit to 10
+                print(f"  • {rule['id']}: {rule['content'][:80]}...")
+        
+        if standards.get('instructions'):
+            print("\nInstructions:")
+            for inst in standards['instructions']:
+                print(f"  • {inst['id']}: {inst['content'][:80]}...")
+        
+        print()
+    
+    elif args.agent_action == "export":
+        # Export for agent
+        agent_type = args.type if hasattr(args, 'type') else "claude"
+        export = mcp.export_for_agent(agent_type)
+        output = args.output if hasattr(args, 'output') else f"agent_context_{agent_type}.json"
+        
+        with open(output, 'w') as f:
+            json.dump(export, f, indent=2)
+        
+        print(f"\n✅ Agent context exported to: {output}")
+        print(f"   Agent type: {agent_type}")
+        print(f"   Total nodes: {export['graph_structure']['total_nodes']}")
+        print(f"   Suggestions included: {len(export['suggestions'])}\n")
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -436,6 +551,29 @@ Examples:
     
     wf_stats = wf_subparsers.add_parser('stats', help='Show statistics')
     wf_stats.set_defaults(func=cmd_waterfall)
+    
+    # Agent assistance command (Enhanced MCP)
+    agent_parser = subparsers.add_parser('agent', aliases=['ai'], help='AI agent assistance (Enhanced MCP)')
+    agent_subparsers = agent_parser.add_subparsers(dest='agent_action', help='Agent action')
+    
+    agent_context = agent_subparsers.add_parser('context', help='Get development context')
+    agent_context.add_argument('--task', help='Task description', default="General development")
+    agent_context.set_defaults(func=cmd_agent)
+    
+    agent_suggest = agent_subparsers.add_parser('suggest', help='Get suggested next actions')
+    agent_suggest.set_defaults(func=cmd_agent)
+    
+    agent_validate = agent_subparsers.add_parser('validate', help='Validate action against rules')
+    agent_validate.add_argument('action', help='Action to validate')
+    agent_validate.set_defaults(func=cmd_agent)
+    
+    agent_standards = agent_subparsers.add_parser('standards', help='Get coding standards')
+    agent_standards.set_defaults(func=cmd_agent)
+    
+    agent_export = agent_subparsers.add_parser('export', help='Export context for agent')
+    agent_export.add_argument('--type', help='Agent type', default='claude')
+    agent_export.add_argument('--output', help='Output file')
+    agent_export.set_defaults(func=cmd_agent)
     
     
     args = parser.parse_args()

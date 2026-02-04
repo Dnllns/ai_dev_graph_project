@@ -1,0 +1,161 @@
+{
+  "meta": {
+    "export_time": "2026-02-05T00:07:32.364143",
+    "agent_type": "claude",
+    "graph_version": "enhanced_mcp_v1"
+  },
+  "philosophy": {
+    "content": "GRAFO, PYTHON, API, DOC, TEST.",
+    "principles": "GRAFO \u00b7 PYTHON \u00b7 API \u00b7 DOC \u00b7 TEST"
+  },
+  "methodology": {
+    "type": "waterfall",
+    "description": "Metodolog\u00eda de desarrollo en cascada con implementaci\u00f3n continua. Cada feature sigue un flujo estricto: An\u00e1lisis \u2192 Dise\u00f1o \u2192 Implementaci\u00f3n \u2192 Testing \u2192 Documentaci\u00f3n \u2192 Release. No se avanza a la siguiente etapa sin completar la anterior.",
+    "stages": [
+      {
+        "id": "stage_analysis",
+        "name": "ANALYSIS",
+        "description": "AN\u00c1LISIS: Definir requisitos, objetivos y alcance. Identificar dependencias y riesgos. Consultar el grafo de conocimiento para asegurar coherencia con la arquitectura existente."
+      },
+      {
+        "id": "stage_design",
+        "name": "DESIGN",
+        "description": "DISE\u00d1O: Crear arquitectura y especificaciones t\u00e9cnicas. Definir interfaces, modelos de datos y flujos. Documentar decisiones de dise\u00f1o en el grafo."
+      },
+      {
+        "id": "stage_implementation",
+        "name": "IMPLEMENTATION",
+        "description": "IMPLEMENTACI\u00d3N: Escribir c\u00f3digo siguiendo los est\u00e1ndares definidos. Implementar tests unitarios en paralelo. Hacer commits frecuentes con conventional commits."
+      },
+      {
+        "id": "stage_testing",
+        "name": "TESTING",
+        "description": "TESTING: Ejecutar suite completa de tests (unitarios, integraci\u00f3n, e2e). Verificar cobertura m\u00ednima. Validar contra requisitos del an\u00e1lisis."
+      },
+      {
+        "id": "stage_documentation",
+        "name": "DOCUMENTATION",
+        "description": "DOCUMENTACI\u00d3N: Actualizar README, docs t\u00e9cnicos y comentarios. A\u00f1adir nodos al grafo con conocimiento generado. Generar changelog con commitizen."
+      },
+      {
+        "id": "stage_release",
+        "name": "RELEASE",
+        "description": "RELEASE: Bump de versi\u00f3n con commitizen. Tag en git. Backup de base de datos. Validaci\u00f3n final de integridad del grafo."
+      }
+    ]
+  },
+  "standards": {
+    "core": "Uso de Python tipado, Pydantic para modelos y NetworkX para el grafo.",
+    "rules": [
+      {
+        "id": "stage_analysis",
+        "content": "AN\u00c1LISIS: Definir requisitos, objetivos y alcance. Identificar dependencias y riesgos. Consultar el grafo de conocimiento para asegurar coherencia con la arquitectura existente."
+      },
+      {
+        "id": "stage_design",
+        "content": "DISE\u00d1O: Crear arquitectura y especificaciones t\u00e9cnicas. Definir interfaces, modelos de datos y flujos. Documentar decisiones de dise\u00f1o en el grafo."
+      },
+      {
+        "id": "stage_implementation",
+        "content": "IMPLEMENTACI\u00d3N: Escribir c\u00f3digo siguiendo los est\u00e1ndares definidos. Implementar tests unitarios en paralelo. Hacer commits frecuentes con conventional commits."
+      },
+      {
+        "id": "stage_testing",
+        "content": "TESTING: Ejecutar suite completa de tests (unitarios, integraci\u00f3n, e2e). Verificar cobertura m\u00ednima. Validar contra requisitos del an\u00e1lisis."
+      },
+      {
+        "id": "stage_documentation",
+        "content": "DOCUMENTACI\u00d3N: Actualizar README, docs t\u00e9cnicos y comentarios. A\u00f1adir nodos al grafo con conocimiento generado. Generar changelog con commitizen."
+      },
+      {
+        "id": "stage_release",
+        "content": "RELEASE: Bump de versi\u00f3n con commitizen. Tag en git. Backup de base de datos. Validaci\u00f3n final de integridad del grafo."
+      },
+      {
+        "id": "rule_no_skip_stages",
+        "content": "PROHIBIDO saltar etapas de la cascada. Cada etapa debe completarse antes de pasar a la siguiente. Si se detecta un error en una etapa anterior, se debe retroceder y corregir."
+      },
+      {
+        "id": "coding_standards",
+        "content": "Uso de Python tipado, Pydantic para modelos y NetworkX para el grafo."
+      },
+      {
+        "id": "version_control",
+        "content": "Uso obligatorio de Git y Commitizen para gesti\u00f3n de estados y changelogs."
+      },
+      {
+        "id": "rule_must_test",
+        "content": "Todo c\u00f3digo nuevo debe incluir tests autom\u00e1ticos que validen su funcionamiento. No se acepta c\u00f3digo sin tests."
+      },
+      {
+        "id": "rule_raw_content",
+        "content": "Content must be raw text. No emojis. No fluff. High information density. Optimal for LLM consumption."
+      },
+      {
+        "id": "maintenance_policy",
+        "content": "Limpieza proactiva: eliminar c\u00f3digo no usado inmediatamente. Mantener el grafo sincronizado con la realidad del c\u00f3digo."
+      },
+      {
+        "id": "rule_node_quality",
+        "content": "Solo a\u00f1adir nodos que aporten valor real al grafo. Evitar nodos redundantes o temporales de testing. Cada nodo debe documentar conocimiento persistente y relevante."
+      },
+      {
+        "id": "r1",
+        "content": "r"
+      }
+    ],
+    "instructions": [
+      {
+        "id": "instruction_track_progress",
+        "content": "Usar el sistema de tracking de cascada para registrar en qu\u00e9 etapa se encuentra cada feature. Actualizar el estado al completar cada etapa. Consultar el estado antes de iniciar trabajo nuevo."
+      },
+      {
+        "id": "agent_instruction",
+        "content": "Los agentes deben consultar el grafo antes de cada tarea para asegurar coherencia con la arquitectura y est\u00e1ndares."
+      }
+    ]
+  },
+  "current_context": {
+    "status": "active",
+    "feature_id": "db_persistence",
+    "title": "Database Persistence Implementation",
+    "current_stage": "testing",
+    "started_at": "2026-02-04T23:53:45.843828",
+    "updated_at": "2026-02-04T23:53:56.414110",
+    "completed_stages": [
+      "analysis",
+      "design",
+      "implementation"
+    ],
+    "stage_guidance": {
+      "stage": "testing",
+      "guidance": "TESTING: Ejecutar suite completa de tests (unitarios, integraci\u00f3n, e2e). Verificar cobertura m\u00ednima. Validar contra requisitos del an\u00e1lisis.",
+      "type": "rule"
+    },
+    "notes": ""
+  },
+  "suggestions": [
+    {
+      "priority": "high",
+      "action": "run_tests",
+      "description": "Execute full test suite and validate coverage",
+      "command": "pytest --cov=ai_dev_graph"
+    },
+    {
+      "priority": "medium",
+      "action": "validate_graph",
+      "description": "Validate graph integrity",
+      "command": "python -m ai_dev_graph.cli validate"
+    }
+  ],
+  "graph_structure": {
+    "total_nodes": 29,
+    "total_edges": 22,
+    "node_types": {
+      "concept": 10,
+      "rule": 14,
+      "instruction": 2,
+      "project": 3
+    }
+  }
+}
