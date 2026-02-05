@@ -234,12 +234,14 @@ function renderGraph() {
     .on("click", nodeClicked)
     .on("dblclick", focusNode) // New Feature
     .on("mouseover", function (event, d) {
+      const type = d.type || d.data?.type || 'default';
+      const color = NODE_COLORS[type] || NODE_COLORS.default;
       tooltip.transition().duration(200).style("opacity", 1);
       tooltip.html(`
-                <strong style="color:${NODE_COLORS[d.data.type]}">${d.id}</strong><br/>
-                <span style="color:#94a3b8; font-size:0.75rem">${d.data.type.toUpperCase()}</span><br/>
+                <strong style="color:${color}">${d.id}</strong><br/>
+                <span style="color:#94a3b8; font-size:0.75rem">${type.toUpperCase()}</span><br/>
                 <div style="margin-top:4px; font-size:0.75rem; color:#cbd5e1; max-height:60px; overflow:hidden;">
-                    ${d.data.content ? d.data.content.slice(0, 80) : ''}
+                    ${(d.content || d.data?.content || '').slice(0, 80)}
                 </div>
             `)
         .style("left", (event.pageX + 15) + "px")
@@ -250,11 +252,21 @@ function renderGraph() {
     });
 
   node.append("circle")
-    .attr("r", d => d.id.startsWith("role_") ? 16 : 10)
-    .attr("fill", d => NODE_COLORS[d.data?.type] || NODE_COLORS.default)
-    .attr("stroke", "#0f172a") // Explicit stroke for export
+    .attr("r", d => {
+      const type = d.type || d.data?.type || 'default';
+      return (type === 'project' || d.id.startsWith("role_")) ? 16 : 10;
+    })
+    .attr("fill", d => {
+      const type = d.type || d.data?.type || 'default';
+      return NODE_COLORS[type] || NODE_COLORS.default;
+    })
+    .attr("stroke", "rgba(255,255,255,0.4)")
     .attr("stroke-width", 2)
-    .style("filter", d => `drop-shadow(0 0 4px ${NODE_COLORS[d.data?.type] || NODE_COLORS.default})`);
+    .style("filter", d => {
+      const type = d.type || d.data?.type || 'default';
+      const color = NODE_COLORS[type] || NODE_COLORS.default;
+      return `drop-shadow(0 0 6px ${color})`;
+    });
 
   node.append("text")
     .attr("dx", 16)
@@ -413,19 +425,25 @@ window.exportGraphPng = function () {
 
 window.showDetails = function (d) {
   const nodeData = d.data || d;
-  const content = nodeData.content || "No content";
-  const type = nodeData.type || "Unknown";
+  const content = nodeData.content || "No content available.";
+  const type = d.type || nodeData.type || "unknown";
 
-  document.getElementById('details-type').textContent = type;
-  document.getElementById('details-type').style.color = NODE_COLORS[type] || NODE_COLORS.default;
+  const panel = document.getElementById('details-panel');
+  const typeTag = document.getElementById('details-type');
+
+  typeTag.textContent = type;
+  typeTag.style.borderColor = NODE_COLORS[type] || NODE_COLORS.default;
+  typeTag.style.color = NODE_COLORS[type] || NODE_COLORS.default;
+
   document.getElementById('details-title').textContent = d.id;
   document.getElementById('details-text').textContent = content;
-  document.getElementById('details-meta').textContent = JSON.stringify(nodeData.metadata || {}, null, 2);
-  document.getElementById('details-panel').style.display = 'flex';
+  document.getElementById('details-meta').textContent = JSON.stringify(nodeData.metadata || nodeData, null, 2);
+
+  panel.classList.add('active');
 };
 
 window.closeModal = function () {
-  document.getElementById('details-panel').style.display = 'none';
+  document.getElementById('details-panel').classList.remove('active');
 };
 
 // --- Library ---

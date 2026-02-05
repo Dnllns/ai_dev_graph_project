@@ -266,19 +266,23 @@
     </div>
   </main>
 
-  <!-- Details Modal -->
-  <div id="details-panel" class="modal"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; justify-content:center; align-items:center;">
-    <div class="modal-content"
-      style="background:var(--bg-sidebar); padding:32px; border-radius:24px; max-width:600px; width:90%; position:relative; border:1px solid var(--border);">
-      <span class="modal-close" onclick="closeModal()"
-        style="position:absolute; top:20px; right:20px; cursor:pointer; font-size:24px;">×</span>
-      <div id="details-type" style="text-transform:uppercase; font-size:0.8rem; font-weight:700; margin-bottom:8px;">
-        TYPE</div>
-      <h1 id="details-title" style="margin-bottom:16px;">Title</h1>
-      <p id="details-text" style="color:var(--text-muted); line-height:1.6;"></p>
-      <pre id="details-meta"
-        style="margin-top:24px; background:rgba(0,0,0,0.3); padding:16px; border-radius:12px; font-size:0.85rem; overflow:auto;"></pre>
+  <!-- Details Sidebar -->
+  <div id="details-panel" class="details-sidebar">
+    <div class="details-close" onclick="closeModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="13 17 18 12 13 7"></polyline>
+        <polyline points="6 17 11 12 6 7"></polyline>
+      </svg>
+    </div>
+    <div class="sidebar-content">
+      <div id="details-type" class="details-type-tag">TYPE</div>
+      <h1 id="details-title" style="margin-bottom:16px; font-size: 1.5rem; font-weight: 700;">Title</h1>
+      <p id="details-text" style="color:var(--text-muted); line-height:1.6; font-size: 0.95rem;"></p>
+
+      <h5
+        style="margin-top: 32px; margin-bottom: 12px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">
+        Raw Metadata</h5>
+      <pre id="details-meta" class="details-json-view"></pre>
     </div>
   </div>
 

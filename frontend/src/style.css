@@ -359,9 +359,16 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* --- NODES VISUALIZATION --- */
 .node circle {
-    stroke: var(--bg-app);
+    stroke: rgba(255, 255, 255, 0.2);
     stroke-width: 2px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Ensure colors from D3 are prominent */
+    cursor: pointer;
+}
+
+.node circle:hover {
+    stroke: #fff;
+    stroke-width: 3px;
 }
 
 .node text {
@@ -470,4 +477,85 @@ input[type="range"]::-webkit-slider-thumb {
     transform: translateY(-50%);
     color: var(--text-muted);
     pointer-events: none;
+}
+
+/* --- SIDEBAR DETAILS --- */
+#details-panel.details-sidebar {
+    display: flex !important;
+    position: fixed;
+    top: 72px;
+    /* Below header */
+    right: -450px;
+    /* Hidden by default */
+    width: 400px;
+    bottom: 0;
+    background: var(--bg-sidebar);
+    border-left: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+    z-index: 50;
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-direction: column;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+}
+
+#details-panel.details-sidebar.active {
+    right: 0;
+}
+
+.sidebar-content {
+    padding: 32px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.details-close {
+    position: absolute;
+    top: 20px;
+    left: -40px;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-sidebar);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.details-close:hover {
+    color: white;
+}
+
+.details-type-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.details-json-view {
+    margin-top: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #a5b4fc;
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Fix background-clip warning while at it */
+#section-title {
+    background-clip: text;
+    -webkit-background-clip: text;
 }
