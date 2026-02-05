@@ -17,14 +17,80 @@
     --border: #334155;
     --border-light: #475569;
 
-    /* Node Colors */
-    --color-project: #f43f5e;
-    --color-concept: #3b82f6;
-    --color-rule: #f59e0b;
-    --color-guideline: #10b981;
-    --color-instruction: #8b5cf6;
-    --color-resource: #64748b;
-    --color-test: #eab308;
+    /* Cyberpunk Neon Palette */
+    --color-project: #ff2e63;
+    /* Neon Pink */
+    --color-concept: #08d9d6;
+    /* Cyan */
+    --color-rule: #ff9a00;
+    /* Orange */
+    --color-guideline: #00ff9d;
+    /* Matrix Green */
+    --color-instruction: #d500f9;
+    /* Vivid Purple */
+    --color-resource: #256eff;
+    /* Electric Blue */
+    --color-test: #ffd300;
+    /* Cyber Yellow */
+}
+
+/* Tooltip */
+#graph-tooltip {
+    position: absolute;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    max-width: 200px;
+    backdrop-filter: blur(4px);
+}
+
+.filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: color 0.2s;
+    margin-bottom: 6px;
+}
+
+.filter-toggle:hover {
+    color: var(--text-main);
+}
+
+.filter-checkbox {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    position: relative;
+    cursor: pointer;
+}
+
+.filter-checkbox:checked {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.filter-checkbox:checked::after {
+    content: '✓';
+    font-size: 10px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 body {

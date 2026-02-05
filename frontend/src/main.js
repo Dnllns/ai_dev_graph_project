@@ -1,15 +1,15 @@
 import './style.css';
 import * as d3 from 'd3';
 
-// Constants
+// Constants: Neon Cyberpunk Palette
 const NODE_COLORS = {
-  "project": "#f43f5e",
-  "concept": "#3b82f6",
-  "rule": "#f59e0b",
-  "guideline": "#10b981",
-  "instruction": "#8b5cf6",
-  "resource": "#64748b",
-  "test": "#eab308",
+  "project": "#ff2e63",    // Neon Pink
+  "concept": "#08d9d6",    // Cyan
+  "rule": "#ff9a00",       // Orange
+  "guideline": "#00ff9d",  // Matrix Green
+  "instruction": "#d500f9", // Vivid Purple
+  "resource": "#256eff",   // Electric Blue
+  "test": "#ffd300",       // Cyber Yellow
   "default": "#475569"
 };
 
@@ -20,10 +20,13 @@ let svg;
 let g;
 let graphData = { nodes: [], links: [] };
 let linkedByIndex = {};
+let neighborMap = {}; // Adjacency list for fast lookup
+let activeFilters = new Set(Object.keys(NODE_COLORS)); // All visible by default
 
 // DOM Initialization
 document.addEventListener('DOMContentLoaded', () => {
   initLegend();
+  initFilters();
   loadGraphVisualization();
 
   // Global Search Handler
@@ -33,8 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Filter in Graph View
     if (query.length > 0) {
       d3.selectAll(".node").each(function (d) {
-        const match = d.id.toLowerCase().includes(query) || (d.data.content && d.data.content.toLowerCase().includes(query));
-        d3.select(this).classed("dimmed", !match).classed("highlighted", match);
+        // Check content match AND filter visibility
+        const typeVisible = activeFilters.has(d.data.type || 'default');
+        const match = (d.id.toLowerCase().includes(query) || (d.data.content && d.data.content.toLowerCase().includes(query)));
+
+        d3.select(this)
+          .classed("dimmed", !match || !typeVisible)
+          .classed("highlighted", match && typeVisible);
       });
       d3.selectAll(".link").classed("dimmed", true);
     } else {
@@ -72,8 +80,25 @@ function initLegend() {
     item.style.fontSize = '0.75rem';
     item.style.color = 'var(--text-muted)';
 
-    item.innerHTML = `<div style="width:8px; height:8px; border-radius:50%; background:${color}"></div><span>${type.toUpperCase()}</span>`;
+    item.innerHTML = `<div style="width:8px; height:8px; border-radius:50%; background:${color}; box-shadow: 0 0 6px ${color}"></div><span>${type.toUpperCase()}</span>`;
     legendContainer.appendChild(item);
+  });
+}
+
+function initFilters() {
+  const container = document.getElementById('filter-controls');
+  if (!container) return;
+
+  container.innerHTML = '';
+  Object.keys(NODE_COLORS).forEach(type => {
+    if (type === 'default') return;
+    const toggle = document.createElement('label');
+    toggle.className = 'filter-toggle';
+    toggle.innerHTML = `
+            <input type="checkbox" class="filter-checkbox" value="${type}" checked onchange="toggleFilter('${type}')">
+            <span>${type.charAt(0).toUpperCase() + type.slice(1)}</span>
+        `;
+    container.appendChild(toggle);
   });
 }
 
@@ -95,7 +120,6 @@ window.showSection = function (id) {
   if (id === 'nodes') loadNodesList();
   if (id === 'logs') loadLogs();
   if (id === 'dashboard') {
-    // Give time for layout to happen
     setTimeout(resizeGraph, 100);
   }
 };
@@ -121,7 +145,7 @@ window.loadGraphVisualization = async function () {
 
     const rawData = await response.json();
     const links = rawData.links || rawData.edges || [];
-    // Deep copy to allow D3 mutation without affecting raw data logic if reloaded
+
     graphData = {
       nodes: rawData.nodes.map(d => ({ ...d })),
       links: links.map(d => ({ ...d }))
@@ -132,10 +156,20 @@ window.loadGraphVisualization = async function () {
     document.getElementById('totalEdges').textContent = graphData.links.length;
     document.getElementById('density').textContent = (rawData.density || 0).toFixed(4);
 
-    // Prep Connectivity Index
+    // Prep Connectivity Index & Neighbor Map
     linkedByIndex = {};
+    neighborMap = {};
+
+    graphData.nodes.forEach(n => neighborMap[n.id] = new Set());
+
     graphData.links.forEach(d => {
       linkedByIndex[`${d.source},${d.target}`] = 1;
+      // Note: d.source/target are IDs initially, then objects after simulation starts
+      // We use IDs for initial map
+      if (!neighborMap[d.source]) neighborMap[d.source] = new Set();
+      if (!neighborMap[d.target]) neighborMap[d.target] = new Set();
+      neighborMap[d.source].add(d.target);
+      neighborMap[d.target].add(d.source);
     });
 
     renderGraph();
@@ -156,11 +190,10 @@ function renderGraph() {
     .append("svg")
     .attr("width", width)
     .attr("height", height)
-    .on("click", resetHighlight); // Background click resets
+    .on("click", resetHighlight);
 
   g = svg.append("g");
 
-  // Zoom setup
   zoom = d3.zoom()
     .scaleExtent([0.1, 8])
     .on("zoom", (event) => g.attr("transform", event.transform));
@@ -175,7 +208,7 @@ function renderGraph() {
     .force("link", d3.forceLink(graphData.links).id(d => d.id).distance(linkDistVal))
     .force("charge", d3.forceManyBody().strength(chargeVal))
     .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("collide", d3.forceCollide().radius(30));
+    .force("collide", d3.forceCollide().radius(35)); // Slightly larger collision
 
   // Arrow Marker
   svg.append("defs").selectAll("marker")
@@ -201,6 +234,8 @@ function renderGraph() {
     .attr("marker-end", "url(#arrow)");
 
   // Nodes
+  const tooltip = d3.select("#graph-tooltip");
+
   const node = g.append("g")
     .selectAll(".node")
     .data(graphData.nodes)
@@ -211,12 +246,28 @@ function renderGraph() {
       .on("drag", dragged)
       .on("end", dragended))
     .on("click", nodeClicked)
-    .on("mouseover", nodeHovered)
-    .on("mouseout", nodeUnhovered);
+    .on("mouseover", function (event, d) {
+      // Tooltip Logic
+      tooltip.transition().duration(200).style("opacity", 1);
+      tooltip.html(`
+                <strong style="color:${NODE_COLORS[d.data.type]}">${d.id}</strong><br/>
+                <span style="color:#94a3b8; font-size:0.75rem">${d.data.type.toUpperCase()}</span><br/>
+                <div style="margin-top:4px; font-size:0.75rem; color:#cbd5e1; max-height:60px; overflow:hidden;">
+                    ${d.data.content ? d.data.content.slice(0, 80) + (d.data.content.length > 80 ? '...' : '') : ''}
+                </div>
+            `)
+        .style("left", (event.pageX + 15) + "px")
+        .style("top", (event.pageY - 28) + "px");
+    })
+    .on("mouseout", function () {
+      tooltip.transition().duration(500).style("opacity", 0);
+    });
 
   node.append("circle")
-    .attr("r", d => d.id.startsWith("role_") ? 16 : 10) // Larger for roles
-    .attr("fill", d => NODE_COLORS[d.data?.type] || NODE_COLORS.default);
+    .attr("r", d => d.id.startsWith("role_") ? 16 : 10)
+    .attr("fill", d => NODE_COLORS[d.data?.type] || NODE_COLORS.default)
+    // Add glow effect via simplified shadow
+    .style("filter", d => `drop-shadow(0 0 4px ${NODE_COLORS[d.data?.type] || NODE_COLORS.default})`);
 
   node.append("text")
     .attr("dx", 16)
@@ -225,6 +276,7 @@ function renderGraph() {
 
   // Simulation Tick
   simulation.on("tick", () => {
+    // Only update visible nodes positions for performance? No, d3 needs all
     link
       .attr("x1", d => d.source.x)
       .attr("y1", d => d.source.y)
@@ -234,7 +286,6 @@ function renderGraph() {
     node.attr("transform", d => `translate(${d.x},${d.y})`);
   });
 
-  // Initial Fit
   setTimeout(window.resetZoom, 500);
 }
 
@@ -261,62 +312,107 @@ function isConnected(a, b) {
   return linkedByIndex[`${a.id},${b.id}`] || linkedByIndex[`${b.id},${a.id}`] || a.id === b.id;
 }
 
-function nodeHovered(event, d) {
-  // Optional: Hover effect (lightweight)
-  // We prefer click for heavy filtering, but hover can imply
-}
-
-function nodeUnhovered(event, d) {
-}
-
 function nodeClicked(event, d) {
-  event.stopPropagation(); // Prevent background click
+  event.stopPropagation();
 
-  // Highlight Neighbors
-  d3.selectAll(".node").classed("dimmed", o => !isConnected(d, o));
-  d3.selectAll(".node").classed("highlighted", o => isConnected(d, o));
+  const tooltip = d3.select("#graph-tooltip");
+  tooltip.style("opacity", 0); // Hide tooltip on click to avoid overlap
 
-  d3.selectAll(".link").classed("dimmed", l => l.source.id !== d.id && l.target.id !== d.id);
-  d3.selectAll(".link").classed("highlighted", l => l.source.id === d.id || l.target.id === d.id);
+  // Highlight Neighbors (Level 1) & Level 2
+  // We want: Selected Node -> Highlighted 100%
+  // Neighbors (L1) -> Highlighted 100%
+  // Neighbors of Neighbors (L2) -> Highlighted 50% ? Or just L1 for clarity.
+  // Let's stick to L1 for strong clarity first, maybe L2 later if requested. The user said "mas capacidades"
+
+  // Let's try 2nd degree neighbors
+  const neighborsL1 = new Set();
+  // Re-scanning links or using neighborMap (need to rebuild map with object references after sim start)
+  // Actually d.index is safe.
+
+  // Simplest: Iterate all lines
+  d3.selectAll(".link").each(function (l) {
+    if (l.source.id === d.id) neighborsL1.add(l.target.id);
+    if (l.target.id === d.id) neighborsL1.add(l.source.id);
+  });
+
+  const neighborsL2 = new Set();
+  d3.selectAll(".link").each(function (l) {
+    if (neighborsL1.has(l.source.id) && l.target.id !== d.id) neighborsL2.add(l.target.id);
+    if (neighborsL1.has(l.target.id) && l.source.id !== d.id) neighborsL2.add(l.source.id);
+  });
+
+  d3.selectAll(".node").classed("dimmed", true).classed("highlighted", false).attr("opacity", 0.1);
+
+  d3.selectAll(".node")
+    .filter(n => n.id === d.id || neighborsL1.has(n.id))
+    .classed("dimmed", false)
+    .classed("highlighted", true)
+    .attr("opacity", 1);
+
+  d3.selectAll(".node")
+    .filter(n => neighborsL2.has(n.id) && !neighborsL1.has(n.id) && n.id !== d.id)
+    .classed("dimmed", false)
+    .attr("opacity", 0.4); // L2 is semi-visible
+
+  d3.selectAll(".link").classed("dimmed", true).attr("opacity", 0.05);
+
+  d3.selectAll(".link")
+    .filter(l => (l.source.id === d.id || l.target.id === d.id)) // Direct links
+    .classed("dimmed", false)
+    .attr("opacity", 1);
 
   // Show details
   window.showDetails(d);
 }
 
 function resetHighlight() {
-  d3.selectAll(".node").classed("dimmed", false).classed("highlighted", false);
-  d3.selectAll(".link").classed("dimmed", false).classed("highlighted", false);
+  d3.selectAll(".node")
+    .classed("dimmed", false)
+    .classed("highlighted", false)
+    .attr("opacity", 1)
+    .style("display", d => activeFilters.has(d.data.type) ? "block" : "none");
+
+  d3.selectAll(".link")
+    .classed("dimmed", false)
+    .classed("highlighted", false)
+    .attr("opacity", 1)
+    .style("display", l => (activeFilters.has(l.source.data.type) && activeFilters.has(l.target.data.type)) ? "block" : "none");
+
   window.closeModal();
 }
 
 // --- Controls ---
 
-window.zoomIn = function () {
-  svg.transition().call(zoom.scaleBy, 1.2);
+window.toggleFilter = function (type) {
+  if (activeFilters.has(type)) {
+    activeFilters.delete(type);
+  } else {
+    activeFilters.add(type);
+  }
+  updateVisibility();
 }
 
-window.zoomOut = function () {
-  svg.transition().call(zoom.scaleBy, 0.8);
+function updateVisibility() {
+  d3.selectAll(".node").style("display", d => activeFilters.has(d.data.type || 'default') ? "block" : "none");
+  d3.selectAll(".link").style("display", d => (activeFilters.has(d.source.data.type) && activeFilters.has(d.target.data.type)) ? "block" : "none");
 }
 
+window.zoomIn = function () { svg.transition().call(zoom.scaleBy, 1.2); }
+window.zoomOut = function () { svg.transition().call(zoom.scaleBy, 0.8); }
 window.resetZoom = function () {
   const width = document.getElementById('graph-container').clientWidth;
   const height = document.getElementById('graph-container').clientHeight;
   svg.transition().duration(750).call(
     zoom.transform,
-    d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8).translate(-width / 2, -height / 2) // Centering logic approx
+    d3.zoomIdentity.translate(width / 2, height / 2).scale(0.6).translate(-width / 2, -height / 2)
   );
 }
 
 window.updateForce = function (type, value) {
   document.getElementById(`val-${type}`).textContent = value;
   if (!simulation) return;
-
-  if (type === 'charge') {
-    simulation.force("charge").strength(+value);
-  } else if (type === 'link') {
-    simulation.force("link").distance(+value);
-  }
+  if (type === 'charge') simulation.force("charge").strength(+value);
+  else if (type === 'link') simulation.force("link").distance(+value);
   simulation.alpha(0.3).restart();
 }
 
@@ -324,9 +420,6 @@ window.updateForce = function (type, value) {
 
 window.showDetails = function (d) {
   const nodeData = d.data || d;
-
-  // If d came from search list, it might not have 'data' wrapper if struct differs, 
-  // but graph d has d.data. Check structure.
   const content = nodeData.content || (d.data ? d.data.content : "No content");
   const type = nodeData.type || (d.data ? d.data.type : "Unknown");
   const id = d.id;
@@ -336,7 +429,6 @@ window.showDetails = function (d) {
   document.getElementById('details-title').textContent = id;
   document.getElementById('details-text').textContent = content;
   document.getElementById('details-meta').textContent = JSON.stringify(nodeData.metadata || {}, null, 2);
-
   document.getElementById('details-panel').style.display = 'flex';
 };
 
@@ -376,7 +468,6 @@ window.fetchNodeDetails = async function (id) {
 };
 
 window.createNode = async function () {
-  // Re-implemented quickly
   const id = document.getElementById('nodeId').value;
   const type = document.getElementById('nodeType').value;
   const content = document.getElementById('nodeContent').value;
