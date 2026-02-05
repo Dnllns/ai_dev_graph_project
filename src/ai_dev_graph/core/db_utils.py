@@ -10,7 +10,8 @@ import json
 import logging
 
 from ai_dev_graph.core.persistence import GraphDatabase
-from ai_dev_graph.core.graph import KnowledgeGraph
+from ai_dev_graph.domain.graph import KnowledgeGraph
+from ai_dev_graph.infrastructure.networkx_repo import NetworkXSQLiteRepository
 
 logger = logging.getLogger(__name__)
 
@@ -42,52 +43,55 @@ def backup_database(db_path: str = "data/graph.db", backup_dir: str = "data/back
 
 
 def export_to_json(db_path: str = "data/graph.db", output_path: str = "graphs/export.json"):
-    """Export database to JSON format.
-    
-    Args:
-        db_path: Path to the database file.
-        output_path: Output JSON file path.
-    """
-    kg = KnowledgeGraph(use_db=True, db_path=db_path)
-    kg.save(output_path)
+    """Export database to JSON format."""
+    repo = NetworkXSQLiteRepository(db_path=db_path)
+    # Use networkx format for export
+    import networkx as nx
+    data = nx.node_link_data(repo.graph)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
     logger.info(f"Graph exported to JSON: {output_path}")
 
 
 def import_from_json(json_path: str, db_path: str = "data/graph.db", clear_existing: bool = False):
-    """Import graph from JSON into database.
-    
-    Args:
-        json_path: Path to JSON file.
-        db_path: Path to database file.
-        clear_existing: If True, clear existing data before import.
-    """
+    """Import graph from JSON into database."""
     if clear_existing:
         logger.warning("Clearing existing database...")
         db_file = Path(db_path)
         if db_file.exists():
             db_file.unlink()
     
-    # Load from JSON
-    temp_kg = KnowledgeGraph(use_db=False)
-    temp_kg.load(json_path)
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    import networkx as nx
+    temp_graph = nx.node_link_graph(data)
     
     # Create new DB-backed graph
-    kg = KnowledgeGraph(use_db=True, db_path=db_path)
+    repo = NetworkXSQLiteRepository(db_path=db_path)
+    kg = KnowledgeGraph(repository=repo)
+    
+    from ai_dev_graph.domain.models import NodeData, NodeType
     
     # Import all nodes and edges
-    for node_id, attrs in temp_kg.graph.nodes(data=True):
+    for node_id, attrs in temp_graph.nodes(data=True):
         node_data = attrs.get("data", {})
-        kg.db.add_node(
-            node_id=node_data["id"],
-            node_type=node_data["type"],
-            content=node_data["content"],
-            metadata=node_data.get("metadata", {})
-        )
+        if not node_data:
+            # Fallback for old formats
+            node_data = {
+                "id": node_id,
+                "type": attrs.get("type", "concept"),
+                "content": attrs.get("content", ""),
+                "metadata": attrs.get("metadata", {})
+            }
+            
+        node = NodeData(**node_data)
+        kg.repo.add_node(node)
     
-    for source, target in temp_kg.graph.edges():
-        kg.db.add_edge(source, target)
+    for source, target in temp_graph.edges():
+        kg.repo.add_edge(source, target)
     
-    logger.info(f"Imported {temp_kg.graph.number_of_nodes()} nodes from {json_path}")
+    logger.info(f"Imported nodes from {json_path}")
 
 
 def get_db_info(db_path: str = "data/graph.db") -> dict:

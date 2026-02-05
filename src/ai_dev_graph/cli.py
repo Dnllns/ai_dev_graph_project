@@ -47,7 +47,7 @@ def cmd_init(args):
 
 def cmd_validate(args):
     """Validate graph integrity."""
-    from ai_dev_graph.models.manager import get_graph_manager
+    from ai_dev_graph.application.manager import get_graph_manager
     
     logger.info("Validating graph...")
     manager = get_graph_manager()
@@ -77,7 +77,7 @@ def cmd_validate(args):
 
 def cmd_stats(args):
     """Show graph statistics."""
-    from ai_dev_graph.models.manager import get_graph_manager
+    from ai_dev_graph.application.manager import get_graph_manager
     
     logger.info("Loading graph...")
     manager = get_graph_manager()
@@ -105,7 +105,7 @@ def cmd_stats(args):
 
 def cmd_export(args):
     """Export graph for agent consumption."""
-    from ai_dev_graph.models.manager import get_graph_manager
+    from ai_dev_graph.application.manager import get_graph_manager
     import json
     
     logger.info("Loading graph...")

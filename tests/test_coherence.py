@@ -2,7 +2,7 @@ import pytest
 import json
 import networkx as nx
 from pathlib import Path
-from ai_dev_graph.core.graph import NodeType
+from ai_dev_graph.domain.models import NodeType
 
 GRAPH_PATH = Path("graphs/v0_initial.json")
 

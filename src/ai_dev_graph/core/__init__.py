@@ -1,5 +1,6 @@
-"""Core graph functionality."""
+"""Core graph functionality (Legacy Layer)."""
 
-from ai_dev_graph.core.graph import KnowledgeGraph, NodeData, NodeType
+from ai_dev_graph.domain.graph import KnowledgeGraph
+from ai_dev_graph.domain.models import NodeData, NodeType
 
 __all__ = ["KnowledgeGraph", "NodeData", "NodeType"]

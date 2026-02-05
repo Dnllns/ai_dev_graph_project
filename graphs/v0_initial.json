@@ -4,205 +4,273 @@
   "graph": {},
   "nodes": [
     {
-      "data": {
-        "id": "waterfall_methodology",
-        "type": "concept",
-        "content": "Metodología de desarrollo en cascada con implementación continua. Cada feature sigue un flujo estricto: Análisis → Diseño → Implementación → Testing → Documentación → Release. No se avanza a la siguiente etapa sin completar la anterior.",
-        "metadata": {}
-      },
-      "id": "waterfall_methodology"
+      "id": "ai_dev_graph",
+      "type": "project",
+      "content": "Herramienta de almacenamiento de conocimiento para agentes IA en forma de grafo.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "stage_analysis",
-        "type": "rule",
-        "content": "ANÁLISIS: Definir requisitos, objetivos y alcance. Identificar dependencias y riesgos. Consultar el grafo de conocimiento para asegurar coherencia con la arquitectura existente.",
-        "metadata": {}
-      },
-      "id": "stage_analysis"
+      "id": "philosophy",
+      "type": "concept",
+      "content": "GRAFO, PYTHON, API, DOC, TEST.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "stage_design",
-        "type": "rule",
-        "content": "DISEÑO: Crear arquitectura y especificaciones técnicas. Definir interfaces, modelos de datos y flujos. Documentar decisiones de diseño en el grafo.",
-        "metadata": {}
-      },
-      "id": "stage_design"
+      "id": "coding_standards",
+      "type": "rule",
+      "content": "Uso de Python tipado, Pydantic para modelos y NetworkX para el grafo.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "stage_implementation",
-        "type": "rule",
-        "content": "IMPLEMENTACIÓN: Escribir código siguiendo los estándares definidos. Implementar tests unitarios en paralelo. Hacer commits frecuentes con conventional commits.",
-        "metadata": {}
-      },
-      "id": "stage_implementation"
+      "id": "version_control",
+      "type": "rule",
+      "content": "Uso obligatorio de Git y Commitizen para gestión de estados y changelogs.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "stage_testing",
-        "type": "rule",
-        "content": "TESTING: Ejecutar suite completa de tests (unitarios, integración, e2e). Verificar cobertura mínima. Validar contra requisitos del análisis.",
-        "metadata": {}
-      },
-      "id": "stage_testing"
+      "id": "rule_must_test",
+      "type": "rule",
+      "content": "Todo código nuevo debe incluir tests automáticos que validen su funcionamiento. No se acepta código sin tests.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "stage_documentation",
-        "type": "rule",
-        "content": "DOCUMENTACIÓN: Actualizar README, docs técnicos y comentarios. Añadir nodos al grafo con conocimiento generado. Generar changelog con commitizen.",
-        "metadata": {}
-      },
-      "id": "stage_documentation"
+      "id": "rule_raw_content",
+      "type": "rule",
+      "content": "Content must be raw text. No emojis. No fluff. High information density. Optimal for LLM consumption.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "stage_release",
-        "type": "rule",
-        "content": "RELEASE: Bump de versión con commitizen. Tag en git. Backup de base de datos. Validación final de integridad del grafo.",
-        "metadata": {}
-      },
-      "id": "stage_release"
+      "id": "maintenance_policy",
+      "type": "rule",
+      "content": "Limpieza proactiva: eliminar código no usado inmediatamente. Mantener el grafo sincronizado con la realidad del código.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "rule_no_skip_stages",
-        "type": "rule",
-        "content": "PROHIBIDO saltar etapas de la cascada. Cada etapa debe completarse antes de pasar a la siguiente. Si se detecta un error en una etapa anterior, se debe retroceder y corregir.",
-        "metadata": {}
-      },
-      "id": "rule_no_skip_stages"
+      "id": "agent_instruction",
+      "type": "instruction",
+      "content": "Los agentes deben consultar el grafo antes de cada tarea para asegurar coherencia con la arquitectura y estándares.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "instruction_track_progress",
-        "type": "instruction",
-        "content": "Usar el sistema de tracking de cascada para registrar en qué etapa se encuentra cada feature. Actualizar el estado al completar cada etapa. Consultar el estado antes de iniciar trabajo nuevo.",
-        "metadata": {}
-      },
-      "id": "instruction_track_progress"
+      "id": "rule_node_quality",
+      "type": "rule",
+      "content": "Solo añadir nodos que aporten valor real al grafo. Evitar nodos redundantes o temporales de testing. Cada nodo debe documentar conocimiento persistente y relevante.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "ai_dev_graph",
-        "type": "project",
-        "content": "Herramienta de almacenamiento de conocimiento para agentes IA en forma de grafo.",
-        "metadata": {}
-      },
-      "id": "ai_dev_graph"
+      "id": "equipo_construccion",
+      "type": "concept",
+      "content": "Equipo de Construcción de Software. Organización jerárquica basada en dominio y conocimiento para eliminar ambigüedad.",
+      "metadata": {
+        "document": "equipo_de_construccion_software"
+      }
     },
     {
-      "data": {
-        "id": "philosophy",
-        "type": "concept",
-        "content": "GRAFO, PYTHON, API, DOC, TEST.",
-        "metadata": {}
-      },
-      "id": "philosophy"
+      "id": "team_principles",
+      "type": "rule",
+      "content": "Principios Generales: 1. No todos opinan sobre todo. 2. Autoridad depende del dominio. 3. Decisiones lo más cerca posible del problema. 4. Conocimiento fluye arriba, decisiones abajo.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "coding_standards",
-        "type": "rule",
-        "content": "Uso de Python tipado, Pydantic para modelos y NetworkX para el grafo.",
-        "metadata": {}
-      },
-      "id": "coding_standards"
+      "id": "team_golden_rule",
+      "type": "rule",
+      "content": "REGLA DE ORO: Nadie manda sobre lo que no entiende y nadie implementa lo que no ha sido decidido.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "version_control",
-        "type": "rule",
-        "content": "Uso obligatorio de Git y Commitizen para gestión de estados y changelogs.",
-        "metadata": {}
-      },
-      "id": "version_control"
+      "id": "team_comm_order",
+      "type": "rule",
+      "content": "Orden de Comunicación: 1. Experto del dominio (habla primero). 2. Coordinador Técnico (encaja decisión). 3. Arquitecto de Sistema (resuelve conflictos/impacto global). 4. Resto (escucha/ejecuta).",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "rule_must_test",
-        "type": "rule",
-        "content": "Todo código nuevo debe incluir tests automáticos que validen su funcionamiento. No se acepta código sin tests.",
-        "metadata": {}
-      },
-      "id": "rule_must_test"
+      "id": "role_arquitecto_sistema",
+      "type": "concept",
+      "content": "Arquitecto de Sistema: Máxima autoridad técnica. Decide arquitectura global, resuelve conflictos y tiene la última palabra estructural. NO implementa detalles.",
+      "metadata": {
+        "priority": 1,
+        "scope": "global"
+      }
     },
     {
-      "data": {
-        "id": "rule_raw_content",
-        "type": "rule",
-        "content": "Content must be raw text. No emojis. No fluff. High information density. Optimal for LLM consumption.",
-        "metadata": {}
-      },
-      "id": "rule_raw_content"
+      "id": "role_coordinador_tecnico",
+      "type": "concept",
+      "content": "Coordinador Técnico: Autoridad operativa. Decide prioridades, coordina dependencias y traduce objetivos. Escala al Arquitecto.",
+      "metadata": {
+        "priority": 2,
+        "scope": "operational"
+      }
     },
     {
-      "data": {
-        "id": "maintenance_policy",
-        "type": "rule",
-        "content": "Limpieza proactiva: eliminar código no usado inmediatamente. Mantener el grafo sincronizado con la realidad del código.",
-        "metadata": {}
-      },
-      "id": "maintenance_policy"
+      "id": "role_group_domain_leads",
+      "type": "concept",
+      "content": "Responsables de Dominio: Autoridad total dentro de su área. Nadie fuera del dominio decide por ellos.",
+      "metadata": {}
     },
     {
-      "data": {
-        "id": "agent_instruction",
-        "type": "instruction",
-        "content": "Los agentes deben consultar el grafo antes de cada tarea para asegurar coherencia con la arquitectura y estándares.",
-        "metadata": {}
-      },
-      "id": "agent_instruction"
+      "id": "role_ing_backend_core",
+      "type": "concept",
+      "content": "Ingeniero Backend Core: Experto en reglas de negocio. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Backend Core",
+        "domain_scope": "reglas de negocio"
+      }
     },
     {
-      "data": {
-        "id": "rule_node_quality",
-        "type": "rule",
-        "content": "Solo añadir nodos que aporten valor real al grafo. Evitar nodos redundantes o temporales de testing. Cada nodo debe documentar conocimiento persistente y relevante.",
-        "metadata": {}
-      },
-      "id": "rule_node_quality"
+      "id": "role_ing_backend_api",
+      "type": "concept",
+      "content": "Ingeniero Backend API: Experto en contratos y apis. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Backend API",
+        "domain_scope": "contratos y apis"
+      }
+    },
+    {
+      "id": "role_ing_frontend_core",
+      "type": "concept",
+      "content": "Ingeniero Frontend Core: Experto en experiencia de usuario. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Frontend Core",
+        "domain_scope": "experiencia de usuario"
+      }
+    },
+    {
+      "id": "role_ing_frontend_int",
+      "type": "concept",
+      "content": "Ingeniero Frontend Integración: Experto en integracion ui backend. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Frontend Integración",
+        "domain_scope": "integracion ui backend"
+      }
+    },
+    {
+      "id": "role_ing_datos",
+      "type": "concept",
+      "content": "Ingeniero de Datos: Experto en modelo de datos y persistencia. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero de Datos",
+        "domain_scope": "modelo de datos y persistencia"
+      }
+    },
+    {
+      "id": "role_ing_grafos",
+      "type": "concept",
+      "content": "Ingeniero de Grafos: Experto en relaciones complejas y conocimiento conectado. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero de Grafos",
+        "domain_scope": "relaciones complejas y conocimiento conectado"
+      }
+    },
+    {
+      "id": "role_ing_ia_sistemas",
+      "type": "concept",
+      "content": "Ingeniero IA Sistemas: Experto en comportamiento, memoria, contexto y control de IA. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero IA Sistemas",
+        "domain_scope": "comportamiento, memoria, contexto y control de IA"
+      }
+    },
+    {
+      "id": "role_ing_ia_int",
+      "type": "concept",
+      "content": "Ingeniero IA Integración: Experto en integración de modelos IA. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero IA Integración",
+        "domain_scope": "integración de modelos IA"
+      }
+    },
+    {
+      "id": "role_ing_seguridad",
+      "type": "concept",
+      "content": "Ingeniero Seguridad: Experto en seguridad end-to-end y cumplimiento. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Seguridad",
+        "domain_scope": "seguridad end-to-end y cumplimiento"
+      }
+    },
+    {
+      "id": "role_ing_infra",
+      "type": "concept",
+      "content": "Ingeniero Infraestructura: Experto en estabilidad, física y red. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Infraestructura",
+        "domain_scope": "estabilidad, física y red"
+      }
+    },
+    {
+      "id": "role_ing_devops",
+      "type": "concept",
+      "content": "Ingeniero DevOps: Experto en despliegue y operación. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero DevOps",
+        "domain_scope": "despliegue y operación"
+      }
+    },
+    {
+      "id": "role_ing_testing",
+      "type": "concept",
+      "content": "Ingeniero Testing: Experto en pruebas. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Testing",
+        "domain_scope": "pruebas"
+      }
+    },
+    {
+      "id": "role_ing_qa",
+      "type": "concept",
+      "content": "Ingeniero Calidad: Experto en calidad y deuda técnica. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Calidad",
+        "domain_scope": "calidad y deuda técnica"
+      }
+    },
+    {
+      "id": "role_ing_obs",
+      "type": "concept",
+      "content": "Ingeniero Observabilidad: Experto en logs, métricas, alertas. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Observabilidad",
+        "domain_scope": "logs, métricas, alertas"
+      }
+    },
+    {
+      "id": "role_ing_docs",
+      "type": "concept",
+      "content": "Ingeniero Documentación: Experto en documentación. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Documentación",
+        "domain_scope": "documentación"
+      }
+    },
+    {
+      "id": "role_ing_version",
+      "type": "concept",
+      "content": "Ingeniero Versionado: Experto en versionado y releases. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Versionado",
+        "domain_scope": "versionado y releases"
+      }
+    },
+    {
+      "id": "role_ing_auto",
+      "type": "concept",
+      "content": "Ingeniero Automatización: Experto en automatización. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Automatización",
+        "domain_scope": "automatización"
+      }
+    },
+    {
+      "id": "role_ing_interop",
+      "type": "concept",
+      "content": "Ingeniero Interoperabilidad: Experto en integraciones externas. Autoridad en su dominio.",
+      "metadata": {
+        "role_name": "Ingeniero Interoperabilidad",
+        "domain_scope": "integraciones externas"
+      }
     }
   ],
-  "edges": [
-    {
-      "source": "waterfall_methodology",
-      "target": "instruction_track_progress"
-    },
-    {
-      "source": "waterfall_methodology",
-      "target": "rule_no_skip_stages"
-    },
-    {
-      "source": "waterfall_methodology",
-      "target": "stage_analysis"
-    },
-    {
-      "source": "waterfall_methodology",
-      "target": "stage_design"
-    },
-    {
-      "source": "waterfall_methodology",
-      "target": "stage_documentation"
-    },
-    {
-      "source": "waterfall_methodology",
-      "target": "stage_implementation"
-    },
-    {
-      "source": "waterfall_methodology",
-      "target": "stage_release"
-    },
-    {
-      "source": "waterfall_methodology",
-      "target": "stage_testing"
-    },
-    {
-      "source": "ai_dev_graph",
-      "target": "maintenance_policy"
-    },
+  "links": [
     {
       "source": "ai_dev_graph",
       "target": "philosophy"
@@ -212,8 +280,12 @@
       "target": "version_control"
     },
     {
-      "source": "philosophy",
-      "target": "agent_instruction"
+      "source": "ai_dev_graph",
+      "target": "maintenance_policy"
+    },
+    {
+      "source": "ai_dev_graph",
+      "target": "equipo_construccion"
     },
     {
       "source": "philosophy",
@@ -225,7 +297,7 @@
     },
     {
       "source": "philosophy",
-      "target": "waterfall_methodology"
+      "target": "agent_instruction"
     },
     {
       "source": "coding_standards",
@@ -234,6 +306,106 @@
     {
       "source": "maintenance_policy",
       "target": "rule_node_quality"
+    },
+    {
+      "source": "equipo_construccion",
+      "target": "team_principles"
+    },
+    {
+      "source": "equipo_construccion",
+      "target": "team_golden_rule"
+    },
+    {
+      "source": "equipo_construccion",
+      "target": "team_comm_order"
+    },
+    {
+      "source": "equipo_construccion",
+      "target": "role_arquitecto_sistema"
+    },
+    {
+      "source": "equipo_construccion",
+      "target": "role_coordinador_tecnico"
+    },
+    {
+      "source": "equipo_construccion",
+      "target": "role_group_domain_leads"
+    },
+    {
+      "source": "team_principles",
+      "target": "team_golden_rule"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_backend_core"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_backend_api"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_frontend_core"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_frontend_int"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_datos"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_grafos"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_ia_sistemas"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_ia_int"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_seguridad"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_infra"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_devops"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_testing"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_qa"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_obs"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_docs"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_version"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_auto"
+    },
+    {
+      "source": "role_group_domain_leads",
+      "target": "role_ing_interop"
     }
   ]
 }

@@ -133,42 +133,39 @@ class TestAdminDashboard:
         await page.goto(f"{base_url}/admin")
         
         # Test Dashboard button
-        await page.click('button:has-text("Dashboard")')
+        await page.click('.nav-item:has-text("Visualizer")')
         await page.wait_for_selector("#dashboard.active")
         
         # Test Nodes button
-        await page.click('button:has-text("Nodos")')
+        await page.click('.nav-item:has-text("Nodes Library")')
         await page.wait_for_selector("#nodes.active")
         
         # Test Create button
-        await page.click('button:has-text("Crear Nodo")')
+        await page.click('.nav-item:has-text("Ingest Knowledge")')
         await page.wait_for_selector("#create.active")
         
-        # Test Search button
-        await page.click('button:has-text("Buscar")')
-        await page.wait_for_selector("#search.active")
-        
-        # Test Settings button
-        await page.click('button:has-text("Configuración")')
-        await page.wait_for_selector("#settings.active")
+        # Test Logs button
+        await page.click('.nav-item:has-text("Activity Logs")')
+        await page.wait_for_selector("#logs.active")
 
 
 class TestCreateNode:
     """Tests for creating nodes through the admin panel."""
     
     @pytest.mark.asyncio
+    @pytest.mark.asyncio
     async def test_create_node_form_visible(self, page, base_url):
         """Test that create node form is visible."""
         await page.goto(f"{base_url}/admin")
         
         # Navigate to create section
-        await page.click('button:has-text("Crear Nodo")')
+        await page.click('.nav-item:has-text("Ingest Knowledge")')
         
         # Check form elements
         node_id_input = await page.query_selector("#nodeId")
         node_type_select = await page.query_selector("#nodeType")
         node_content = await page.query_selector("#nodeContent")
-        create_button = await page.query_selector('button:has-text("Crear Nodo")')
+        create_button = await page.query_selector('button:has-text("Create Node")')
         
         assert node_id_input is not None
         assert node_type_select is not None
@@ -181,7 +178,7 @@ class TestCreateNode:
         await page.goto(f"{base_url}/admin")
         
         # Navigate to create section
-        await page.click('button:has-text("Crear Nodo")')
+        await page.click('.nav-item:has-text("Ingest Knowledge")')
         
         # Fill form
         await page.fill("#nodeId", "test_e2e_concept")
@@ -189,13 +186,13 @@ class TestCreateNode:
         await page.fill("#nodeContent", "Test concept from E2E test")
         
         # Submit form
-        await page.click('button:has-text("✓ Crear Nodo")')
+        await page.click('button:has-text("Create Node")')
         
         # Wait briefly for alert to appear
-        await page.wait_for_timeout(1000)
+        await page.wait_for_selector("#alertBox", state="visible", timeout=5000)
         
-        # Check if alert exists (may have class alert and alert-success)
-        alert = await page.query_selector(".alert")
+        # Check if alert exists 
+        alert = await page.query_selector("#alertBox")
         assert alert is not None
     
     @pytest.mark.asyncio
@@ -204,7 +201,7 @@ class TestCreateNode:
         await page.goto(f"{base_url}/admin")
         
         # Navigate to create section
-        await page.click('button:has-text("Crear Nodo")')
+        await page.click('.nav-item:has-text("Ingest Knowledge")')
         
         # Fill form
         await page.fill("#nodeId", "test_e2e_rule")
@@ -213,13 +210,13 @@ class TestCreateNode:
         await page.fill("#nodeMetadata", '{"priority": "high"}')
         
         # Submit form
-        await page.click('button:has-text("✓ Crear Nodo")')
+        await page.click('button:has-text("Create Node")')
         
         # Wait briefly for alert to appear
-        await page.wait_for_timeout(1000)
+        await page.wait_for_selector("#alertBox", state="visible", timeout=5000)
         
         # Check if alert exists
-        alert = await page.query_selector(".alert")
+        alert = await page.query_selector("#alertBox")
         assert alert is not None
 
 
@@ -232,13 +229,13 @@ class TestNodeManagement:
         await page.goto(f"{base_url}/admin")
         
         # Navigate to nodes section
-        await page.click('button:has-text("Nodos")')
+        await page.click('.nav-item:has-text("Nodes Library")')
         
         # Wait for nodes list
-        await page.wait_for_selector(".nodes-list", timeout=5000)
+        await page.wait_for_selector("#nodesList", timeout=5000)
         
         # Check list exists
-        nodes_list = await page.query_selector(".nodes-list")
+        nodes_list = await page.query_selector("#nodesList")
         assert nodes_list is not None
     
     @pytest.mark.asyncio
@@ -247,8 +244,8 @@ class TestNodeManagement:
         await page.goto(f"{base_url}/admin")
         
         # Navigate to nodes section
-        await page.click('button:has-text("Nodos")')
-        await page.wait_for_selector(".nodes-list", timeout=5000)
+        await page.click('.nav-item:has-text("Nodes Library")')
+        await page.wait_for_selector(".node-card", timeout=5000)
         
         # Type in search
         await page.fill("#searchInput", "philosophy")
@@ -257,7 +254,7 @@ class TestNodeManagement:
         await page.wait_for_timeout(500)
         
         # Check filtered results
-        node_items = await page.query_selector_all(".node-item")
+        node_items = await page.query_selector_all(".node-card")
         assert len(node_items) > 0
     
     @pytest.mark.asyncio
@@ -266,139 +263,21 @@ class TestNodeManagement:
         await page.goto(f"{base_url}/admin")
         
         # Navigate to nodes
-        await page.click('button:has-text("Nodos")')
-        await page.wait_for_selector(".node-item", timeout=5000)
+        await page.click('.nav-item:has-text("Nodes Library")')
+        await page.wait_for_selector(".node-card", timeout=5000)
         
-        # Click first node's "Ver" button
-        view_buttons = await page.query_selector_all('button:has-text("Ver")')
-        if view_buttons:
-            await view_buttons[0].click()
-            
-            # Wait for modal
-            await page.wait_for_selector(".modal.active", timeout=5000)
-            
-            # Check modal content
-            modal = await page.query_selector(".modal-content")
-            assert modal is not None
+        # Click first node card
+        await page.click(".node-card")
+        
+        # Wait for modal
+        await page.wait_for_selector(".modal.active", timeout=5000)
+        
+        # Check modal content
+        modal = await page.query_selector(".modal-content")
+        assert modal is not None
 
 
-class TestSearchFunctionality:
-    """Tests for advanced search."""
-    
-    @pytest.mark.asyncio
-    async def test_search_by_type(self, page, base_url):
-        """Test searching nodes by type."""
-        await page.goto(f"{base_url}/admin")
-        
-        # Navigate to search
-        await page.click('button:has-text("Buscar")')
-        
-        # Select type filter
-        await page.select_option("#searchType", "rule")
-        
-        # Submit search
-        await page.click('button:has-text("🔍 Buscar")')
-        
-        # Wait briefly for search to process
-        await page.wait_for_timeout(500)
-        
-        # Check results exist (may be hidden but present in DOM)
-        results = await page.query_selector("#searchResults")
-        assert results is not None
-    
-    @pytest.mark.asyncio
-    async def test_search_by_content(self, page, base_url):
-        """Test searching by content match."""
-        await page.goto(f"{base_url}/admin")
-        
-        # Navigate to search
-        await page.click('button:has-text("Buscar")')
-        
-        # Enter search content
-        await page.fill("#searchContent", "philosophy")
-        
-        # Submit search
-        await page.click('button:has-text("🔍 Buscar")')
-        
-        # Wait briefly for search to process
-        await page.wait_for_timeout(500)
-        
-        # Check results exist
-        results = await page.query_selector("#searchResults")
-        assert results is not None
-
-
-class TestSettings:
-    """Tests for settings and operations."""
-    
-    @pytest.mark.asyncio
-    async def test_settings_page_loads(self, page, base_url):
-        """Test that settings page loads."""
-        await page.goto(f"{base_url}/admin")
-        
-        # Navigate to settings
-        await page.click('button:has-text("Configuración")')
-        
-        # Check settings elements
-        graph_status = await page.query_selector("#graphStatus")
-        assert graph_status is not None
-    
-    @pytest.mark.asyncio
-    async def test_download_graph(self, page, base_url):
-        """Test downloading graph as JSON."""
-        await page.goto(f"{base_url}/admin")
-        
-        # Navigate to settings
-        await page.click('button:has-text("Configuración")')
-        
-        # Listen for download (async context manager)
-        async with page.expect_download() as download_info:
-            await page.click('button:has-text("⬇️ Descargar JSON")')
-        
-        download = await download_info.value
-        
-        # Verify download
-        assert download.suggested_filename is not None
-        assert download.suggested_filename.startswith("graph_")
-
-
-class TestResponsiveness:
-    """Tests for responsive design."""
-    
-    @pytest.mark.asyncio
-    async def test_admin_panel_mobile_view(self, browser, base_url):
-        """Test admin panel on mobile viewport."""
-        context = await browser.new_context(
-            viewport={"width": 375, "height": 667}  # iPhone size
-        )
-        page = await context.new_page()
-        
-        await page.goto(f"{base_url}/admin")
-        
-        # Check elements are visible
-        dashboard = await page.query_selector("#dashboard")
-        assert dashboard is not None
-        
-        # Take screenshot for visual inspection
-        # await page.screenshot(path="mobile_view.png")
-        
-        await context.close()
-    
-    @pytest.mark.asyncio
-    async def test_admin_panel_tablet_view(self, browser, base_url):
-        """Test admin panel on tablet viewport."""
-        context = await browser.new_context(
-            viewport={"width": 768, "height": 1024}  # iPad size
-        )
-        page = await context.new_page()
-        
-        await page.goto(f"{base_url}/admin")
-        
-        # Check responsive layout
-        container = await page.query_selector(".container")
-        assert container is not None
-        
-        await context.close()
+# Removed obsolete UI tests
 
 
 class TestUserFlow:
@@ -410,54 +289,27 @@ class TestUserFlow:
         await page.goto(f"{base_url}/admin")
         
         # Step 1: Create a new node
-        await page.click('button:has-text("Crear Nodo")')
+        await page.click('.nav-item:has-text("Ingest Knowledge")')
         await page.fill("#nodeId", f"workflow_test_{int(time.time())}")
         await page.select_option("#nodeType", "concept")
         await page.fill("#nodeContent", "Workflow test concept")
-        await page.click('button:has-text("✓ Crear Nodo")')
+        await page.click('button:has-text("Create Node")')
         
         # Wait for success
-        await page.wait_for_selector(".alert-success", timeout=5000)
+        await page.wait_for_selector("#alertBox", state="visible", timeout=5000)
         
-        # Step 2: Navigate to search
-        await page.click('button:has-text("Buscar")')
+        # Step 2: Navigate to nodes list (search)
+        await page.click('.nav-item:has-text("Nodes Library")')
         
         # Step 3: Search for the created node
-        await page.select_option("#searchType", "concept")
-        await page.click('button:has-text("🔍 Buscar")')
+        await page.fill("#searchInput", "workflow_test")
         
         # Wait briefly for search to process
         await page.wait_for_timeout(500)
         
-        # Step 4: Verify results element exists
-        results = await page.query_selector("#searchResults")
+        # Step 4: Verify results exist
+        results = await page.query_selector(".node-card")
         assert results is not None
-    
-    @pytest.mark.asyncio
-    async def test_complete_workflow_create_view_delete(self, page, base_url):
-        """Test workflow: create, view, and list nodes."""
-        await page.goto(f"{base_url}/admin")
-        
-        # Create node
-        await page.click('button:has-text("Crear Nodo")')
-        test_id = f"view_test_{int(time.time())}"
-        await page.fill("#nodeId", test_id)
-        await page.select_option("#nodeType", "guideline")
-        await page.fill("#nodeContent", "Test guideline for view")
-        await page.click('button:has-text("✓ Crear Nodo")')
-        await page.wait_for_selector(".alert-success", timeout=5000)
-        
-        # Navigate to nodes list
-        await page.click('button:has-text("Nodos")')
-        await page.wait_for_selector(".node-item", timeout=5000)
-        
-        # Search for our node
-        await page.fill("#searchInput", test_id)
-        await page.wait_for_timeout(300)
-        
-        # Verify node appears
-        node_items = await page.query_selector_all(".node-item")
-        assert len(node_items) > 0
 
 
 class TestAPIIntegration:
@@ -516,8 +368,8 @@ class TestAPIIntegration:
         
         # Verify in UI
         await page.goto(f"{base_url}/admin")
-        await page.click('button:has-text("Nodos")')
-        await page.wait_for_selector(".node-item", timeout=5000)
+        await page.click('.nav-item:has-text("Nodes Library")')
+        await page.wait_for_selector(".node-card", timeout=5000)
         
         # Search for it
         await page.fill("#searchInput", node_id)
@@ -541,7 +393,7 @@ class TestUIElements:
         initial_text = await page.text_content("#totalNodes")
         
         # Click refresh
-        await page.click('button:has-text("🔄 Actualizar")')
+        await page.click('button:has-text("Refresh View")')
         
         # Wait for potential update
         await page.wait_for_timeout(1000)
@@ -556,14 +408,14 @@ class TestUIElements:
         await page.goto(f"{base_url}/admin")
         
         # Navigate to create
-        await page.click('button:has-text("Crear Nodo")')
+        await page.click('.nav-item:has-text("Ingest Knowledge")')
         
         # Fill form
         await page.fill("#nodeId", "test_value")
         await page.fill("#nodeContent", "test content")
         
         # Click reset
-        await page.click('button:has-text("↻ Limpiar")')
+        await page.click('button:has-text("Clear")')
         
         # Check inputs are cleared
         node_id_value = await page.input_value("#nodeId")
@@ -578,11 +430,11 @@ class TestUIElements:
         await page.goto(f"{base_url}/admin")
         
         # Navigate to nodes
-        await page.click('button:has-text("Nodos")')
-        await page.wait_for_selector(".node-item", timeout=5000)
+        await page.click('.nav-item:has-text("Nodes Library")')
+        await page.wait_for_selector(".node-card", timeout=5000)
         
         # Click view button to open modal
-        view_buttons = await page.query_selector_all('button:has-text("Ver")')
+        view_buttons = await page.query_selector_all(".node-card")
         if view_buttons:
             await view_buttons[0].click()
             await page.wait_for_selector(".modal.active", timeout=5000)

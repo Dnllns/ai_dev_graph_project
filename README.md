@@ -251,6 +251,16 @@ standards = response.json()
 4. **Exportar** → `cli export --agent claude`
 5. **Integrar** → Usar en agentes
 
+## 💾 Configuración de Persistencia
+
+El sistema soporta por defecto **Neo4j**, pero puede usar **SQLite** como fallback.
+
+Configuración (Environment Variables):
+- `DATABASE_TYPE`: `neo4j` (default) o `sqlite`
+- `NEO4J_URI`: URI de conexión (ej. `bolt://localhost:7687`)
+- `NEO4J_USER`: Usuario (ej. `neo4j`)
+- `NEO4J_PASSWORD`: Contraseña
+
 ## 📦 Dependencias
 
 - `networkx>=3.2.1` - Grafos
@@ -263,6 +273,90 @@ standards = response.json()
 - `pytest>=8.0.0` - Testing
 - `ruff>=0.1.0` - Linting
 - `commitizen>=3.15.0` - Versionado
+
+# 🚀 Ejecución de Pipelines Localmente con `act`
+
+Este proyecto utiliza **GitHub Actions** para la Integración Continua (CI). Para ahorrar tiempo y evitar commits innecesarios, utilizamos [`act`](https://github.com/nektos/act) para correr los flujos de trabajo localmente.
+
+## 🛠 Requisitos Previos
+
+Antes de empezar, asegúrate de tener instalado:
+1. **Docker**: `act` levanta contenedores para simular los runners de GitHub.
+2. **Git**: Para la gestión del repositorio.
+
+---
+
+## 📥 Instalación de `act`
+
+Dependiendo de tu sistema operativo, elige uno de los siguientes comandos:
+
+### En macOS (Homebrew)
+```bash
+brew install nektos/tap/act
+```
+
+### En Linux (Script de instalación)
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo sh
+```
+
+### En Windows (Chocolatey o Winget)
+
+```bash
+choco install act-cli
+# O mediante winget
+winget install nektos.act
+```
+
+---
+
+## 🚀 Cómo usarlo
+
+Una vez instalado, navega a la raíz del proyecto (donde está la carpeta `.github/`) y utiliza estos comandos:
+
+### 1. Listar todas las acciones disponibles
+
+```bash
+act -l
+```
+
+### 2. Ejecutar la pipeline completa (Simular un Push)
+
+```bash
+act
+```
+
+### 3. Ejecutar un Job específico
+
+Si tu archivo `.yml` tiene varios jobs (ej: `lint`, `test`, `docs`), puedes correr solo uno:
+
+```bash
+act -j test
+```
+
+### 4. Simular un evento específico (ej: Pull Request)
+
+```bash
+act pull_request
+```
+
+---
+
+## ⚠️ Notas Importantes
+
+* **Primera ejecución:** La primera vez que corras `act`, te preguntará qué "imagen" de Docker deseas usar (Small, Medium, Large). La opción **Medium** suele ser suficiente para la mayoría de proyectos de Python.
+* **Variables de Entorno:** Si tu pipeline usa secretos (`secrets.GITHUB_TOKEN`, etc.), puedes crear un archivo `.secrets` localmente y ejecutar:
+```bash
+act --secret-file .secrets
+```
+
+* **Arquitectura:** Asegúrate de que Docker esté corriendo antes de lanzar el comando, de lo contrario, `act` fallará al no poder conectar con el demonio de Docker.
+
+---
+
+### Un tip de pro:
+Si notas que `act` tarda mucho en descargar las imágenes de Docker cada vez, puedes usar el flag `--reuse` para que no borre los contenedores después de cada ejecución exitosa, acelerando el proceso de feedback.
 
 ## 🤝 Contribuir
 

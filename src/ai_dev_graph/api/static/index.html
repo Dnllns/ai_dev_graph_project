@@ -514,6 +514,10 @@
                         <div class="stat-label">Edges</div>
                         <div class="stat-value" id="totalEdges">0</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Density</div>
+                        <div class="stat-value" id="density">0.00</div>
+                    </div>
                 </div>
                 <div id="legend"></div>
                 <button onclick="loadGraphVisualization()" class="btn"
@@ -671,6 +675,7 @@
 
                 document.getElementById('totalNodes').textContent = graphData.nodes.length;
                 document.getElementById('totalEdges').textContent = links.length;
+                document.getElementById('density').textContent = (graphData.density || 0).toFixed(4);
 
                 const width = document.getElementById('graph-container').clientWidth;
                 const height = document.getElementById('graph-container').clientHeight;

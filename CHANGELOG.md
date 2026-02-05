@@ -1,3 +1,14 @@
+## v0.4.0 (2026-02-05)
+
+### Feat
+
+#### Neo4j Integration and Persistence Abstraction
+
+- **Neo4j Support**: Added support for Neo4j as the primary graph database.
+- **Persistence Abstraction**: Introduced `GraphRepository` and `PersistenceFactory` to support multiple backends.
+- **Configuration**: Switch between Neo4j (default) and SQLite via `DATABASE_TYPE` environment variable.
+- **Semantic Mapping**: Nodes are stored with semantic labels in Neo4j.
+
 ## v0.3.0 (2026-02-05)
 
 ### Feat
