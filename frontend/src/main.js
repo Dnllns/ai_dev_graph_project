@@ -2,7 +2,7 @@ import './style.css';
 import * as d3 from 'd3';
 
 // Constants: Neon Cyberpunk Palette
-const NODE_COLORS = {
+export const NODE_COLORS = {
   "project": "#ff2e63",    // Neon Pink
   "concept": "#08d9d6",    // Cyan
   "rule": "#ff9a00",       // Orange
@@ -515,4 +515,38 @@ window.loadLogs = async function () {
 
 window.downloadJson = function () {
   window.open('/graph', '_blank');
+};
+
+window.handleGlobalSearch = function (term) {
+  const searchTerm = term.toLowerCase();
+
+  // Filter Library if visible
+  if (document.getElementById('nodes').classList.contains('active')) {
+    window.filterNodesLib(searchTerm);
+  }
+
+  // Filter Graph
+  if (!svg) return;
+
+  if (!searchTerm) {
+    resetHighlight();
+    return;
+  }
+
+  d3.selectAll(".node").each(function (d) {
+    const matches = d.id.toLowerCase().includes(searchTerm) ||
+      (d.data?.content || '').toLowerCase().includes(searchTerm);
+    d3.select(this)
+      .classed("dimmed", !matches)
+      .classed("highlighted", matches)
+      .attr("opacity", matches ? 1 : 0.1);
+  });
+
+  d3.selectAll(".link").each(function (l) {
+    const sourceMatches = l.source.id.toLowerCase().includes(searchTerm);
+    const targetMatches = l.target.id.toLowerCase().includes(searchTerm);
+    d3.select(this)
+      .classed("dimmed", !(sourceMatches || targetMatches))
+      .attr("opacity", (sourceMatches || targetMatches) ? 0.8 : 0.05);
+  });
 };
