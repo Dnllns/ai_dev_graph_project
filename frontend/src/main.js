@@ -353,8 +353,15 @@ function focusNode(event, d) {
 }
 
 function resetHighlight() {
-  d3.selectAll(".node").classed("dimmed", false).classed("highlighted", false).attr("opacity", 1).style("display", d => activeFilters.has(d.data.type) ? "block" : "none");
-  d3.selectAll(".link").classed("dimmed", false).classed("highlighted", false).attr("opacity", 1).style("display", l => (activeFilters.has(l.source.data.type) && activeFilters.has(l.target.data.type)) ? "block" : "none");
+  d3.selectAll(".node").classed("dimmed", false).classed("highlighted", false).attr("opacity", 1).style("display", d => {
+    const type = d.type || d.data?.type || 'default';
+    return activeFilters.has(type) ? "block" : "none";
+  });
+  d3.selectAll(".link").classed("dimmed", false).classed("highlighted", false).attr("opacity", 1).style("display", l => {
+    const sType = l.source.type || l.source.data?.type || 'default';
+    const tType = l.target.type || l.target.data?.type || 'default';
+    return (activeFilters.has(sType) && activeFilters.has(tType)) ? "block" : "none";
+  });
   window.closeModal();
 }
 
@@ -366,8 +373,15 @@ window.toggleFilter = function (type) {
   }
 
   // Update graph visibility
-  d3.selectAll(".node").style("display", d => activeFilters.has(d.data.type || 'default') ? "block" : "none");
-  d3.selectAll(".link").style("display", d => (activeFilters.has(d.source.data.type) && activeFilters.has(d.target.data.type)) ? "block" : "none");
+  d3.selectAll(".node").style("display", d => {
+    const nodeType = d.type || d.data?.type || 'default';
+    return activeFilters.has(nodeType) ? "block" : "none";
+  });
+  d3.selectAll(".link").style("display", l => {
+    const sType = l.source.type || l.source.data?.type || 'default';
+    const tType = l.target.type || l.target.data?.type || 'default';
+    return (activeFilters.has(sType) && activeFilters.has(tType)) ? "block" : "none";
+  });
 }
 
 window.zoomIn = function () { svg.transition().call(zoom.scaleBy, 1.2); }
