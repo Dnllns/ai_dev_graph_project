@@ -4,7 +4,6 @@ This test validates that the Activity Logs section is functional.
 """
 
 import pytest
-import time
 
 
 @pytest.mark.e2e

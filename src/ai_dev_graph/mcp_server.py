@@ -1,12 +1,9 @@
 """Enhanced MCP Server for AI Dev Graph - Model Context Protocol Interface."""
 
-import json
 import logging
-from typing import Any, Dict, List, Optional, Tuple
-from pathlib import Path
+from typing import Any, Dict, List, Optional
 from datetime import datetime
 
-from ai_dev_graph.domain.models import NodeType
 from ai_dev_graph.application.manager import GraphManager, get_graph_manager
 from ai_dev_graph.waterfall_tracker import WaterfallTracker, WaterfallStage
 
@@ -118,7 +115,6 @@ class EnhancedMCPServer:
             if not node:
                 continue
                 
-            rule_content = node.content.lower()
             action_lower = action.lower()
             
             if "rule_no_skip_stages" in rule_id and "skip" in action_lower:

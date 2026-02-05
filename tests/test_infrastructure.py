@@ -1,6 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch, ANY
-import json
+from unittest.mock import MagicMock, patch
 from ai_dev_graph.core.config import DatabaseType
 from ai_dev_graph.infrastructure.persistence_factory import PersistenceFactory
 from ai_dev_graph.infrastructure.neo4j_repo import Neo4jRepository

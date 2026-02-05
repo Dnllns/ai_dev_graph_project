@@ -48,6 +48,6 @@ class PersistenceFactory:
         if _repository_instance and hasattr(_repository_instance, 'close'):
             try:
                 _repository_instance.close()
-            except:
+            except Exception:
                 pass
         _repository_instance = None

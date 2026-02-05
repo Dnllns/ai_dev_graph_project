@@ -1,7 +1,6 @@
 import networkx as nx
-from typing import List, Dict, Any, Optional, Tuple, Protocol
-from ai_dev_graph.domain.models import NodeData, NodeType
-from ai_dev_graph.domain.repositories import GraphRepository
+from typing import List, Dict, Any, Optional, Tuple
+from ai_dev_graph.domain.models import NodeData
 from ai_dev_graph.core.persistence import GraphDatabase
 
 from ai_dev_graph.core.config import settings

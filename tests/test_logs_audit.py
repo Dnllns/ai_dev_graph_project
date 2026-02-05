@@ -5,7 +5,7 @@ Tests the activity logs section in the admin interface using Playwright.
 
 import pytest
 import asyncio
-from playwright.async_api import async_playwright, Page, Browser, BrowserContext
+from playwright.async_api import async_playwright, Page
 
 
 @pytest.fixture(scope="module")

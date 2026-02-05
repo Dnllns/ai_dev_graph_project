@@ -71,7 +71,7 @@ def import_from_json(json_path: str, db_path: str = "data/graph.db", clear_exist
     repo = NetworkXSQLiteRepository(db_path=db_path)
     kg = KnowledgeGraph(repository=repo)
     
-    from ai_dev_graph.domain.models import NodeData, NodeType
+    from ai_dev_graph.domain.models import NodeData
     
     # Import all nodes and edges
     for node_id, attrs in temp_graph.nodes(data=True):

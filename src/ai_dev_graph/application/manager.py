@@ -1,5 +1,3 @@
-import os
-import json
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -7,7 +5,6 @@ from typing import Dict, Any, List, Optional
 import logging
 
 from ai_dev_graph.domain.graph import KnowledgeGraph
-from ai_dev_graph.infrastructure.networkx_repo import NetworkXSQLiteRepository
 from ai_dev_graph.init_meta_graph import init_project_graph
 
 logger = logging.getLogger(__name__)
@@ -31,7 +28,6 @@ class GraphManager:
         """Load existing graph from database or create a new one."""
         # DIP: We instantiate the repository through the factory
         from ai_dev_graph.infrastructure.persistence_factory import PersistenceFactory
-        from ai_dev_graph.init_meta_graph import init_project_graph
         
         repo = PersistenceFactory.get_repository()
         kg = KnowledgeGraph(repository=repo)

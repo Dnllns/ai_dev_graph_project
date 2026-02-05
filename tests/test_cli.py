@@ -6,10 +6,8 @@ Tests all CLI commands with full coverage.
 import pytest
 import sys
 import json
-import tempfile
 from unittest.mock import patch, MagicMock
 from pathlib import Path
-from io import StringIO
 
 from ai_dev_graph.cli import (
     cmd_server,

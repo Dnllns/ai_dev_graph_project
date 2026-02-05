@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any, Optional, Tuple, Protocol
+from typing import List, Dict, Any, Optional, Tuple
 from neo4j import GraphDatabase as Neo4jDriver
 from ai_dev_graph.domain.models import NodeData, NodeType
 from ai_dev_graph.core.config import settings
@@ -169,7 +169,7 @@ class Neo4jRepository:
         metadata = data.get("metadata", "{}")
         try:
             metadata_dict = json.loads(metadata)
-        except:
+        except (json.JSONDecodeError, TypeError):
             metadata_dict = {}
             
         return NodeData(

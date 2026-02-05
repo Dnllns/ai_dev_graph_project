@@ -12,10 +12,7 @@ Or with specific browser:
 
 import pytest
 import asyncio
-from pathlib import Path
-import json
-import tempfile
-from playwright.async_api import async_playwright, Page, Browser, BrowserContext
+from playwright.async_api import async_playwright
 import uvicorn
 import threading
 import time
@@ -388,9 +385,6 @@ class TestUIElements:
     async def test_refresh_button_works(self, page, base_url):
         """Test that refresh button updates data."""
         await page.goto(f"{base_url}/admin")
-        
-        # Get initial total nodes
-        initial_text = await page.text_content("#totalNodes")
         
         # Click refresh
         await page.click('button:has-text("Refresh View")')

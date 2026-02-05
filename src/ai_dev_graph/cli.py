@@ -10,8 +10,6 @@ import argparse
 import logging
 import json
 import sys
-import os
-from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -42,7 +40,7 @@ def cmd_init(args):
     
     stats = kg.get_graph_stats()
     logger.info(f"Graph initialized with {stats['total_nodes']} nodes")
-    logger.info(f"Saved to: graphs/v0_initial.json")
+    logger.info("Saved to: graphs/v0_initial.json")
 
 
 def cmd_validate(args):
@@ -123,7 +121,7 @@ def cmd_export(args):
     logger.info(f"Exported to: {output_path}")
     
     stats = export.get('statistics', {})
-    print(f"\n✓ Export complete")
+    print("\n✓ Export complete")
     print(f"  Nodes: {stats.get('total_nodes', 'N/A')}")
     print(f"  Edges: {stats.get('total_edges', 'N/A')}")
 
@@ -267,7 +265,7 @@ def cmd_waterfall(args):
             print(f"\n✅ Advanced feature: {args.feature_id}")
             print(f"   {old_stage.upper()} → {feature.current_stage.value.upper()}\n")
         else:
-            print(f"\n❌ Cannot advance (already at final stage)\n")
+            print("\n❌ Cannot advance (already at final stage)\n")
     
     elif args.wf_action == "regress":
         feature = tracker.get_feature(args.feature_id)
@@ -283,7 +281,7 @@ def cmd_waterfall(args):
             print(f"   {old_stage.upper()} → {feature.current_stage.value.upper()}")
             print(f"   Reason: {reason}\n")
         else:
-            print(f"\n❌ Cannot regress (already at first stage)\n")
+            print("\n❌ Cannot regress (already at first stage)\n")
     
     elif args.wf_action == "note":
         if tracker.get_feature(args.feature_id):
@@ -347,7 +345,7 @@ def cmd_agent(args):
             print(f"   Title: {feature['title']}")
             print(f"   Stage: {feature['current_stage'].upper()}")
             if feature.get('stage_guidance'):
-                print(f"\n   📋 Stage Guidance:")
+                print("\n   📋 Stage Guidance:")
                 print(f"   {feature['stage_guidance']['guidance']}")
         else:
             print(f"⚠️  {feature['message']}")
