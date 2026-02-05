@@ -1,0 +1,129 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    name: Code Quality - Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        enable-cache: true
+        
+    - name: Set up Python
+      run: uv python install 3.12
+      
+    - name: Install dependencies
+      run: uv sync
+      
+    - name: Run Ruff linter
+      run: uv run ruff check src/ tests/
+      
+    - name: Run Ruff formatter check
+      run: uv run ruff format --check src/ tests/
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        enable-cache: true
+        
+    - name: Set up Python
+      run: uv python install 3.12
+      
+    - name: Install dependencies
+      run: uv sync
+      
+    - name: Run unit tests
+      run: uv run pytest tests/test_core.py tests/test_infrastructure.py -v
+      env:
+        DATABASE_TYPE: sqlite
+        
+    - name: Run integration tests
+      run: uv run pytest tests/test_coherence.py -v
+      env:
+        DATABASE_TYPE: sqlite
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        enable-cache: true
+        
+    - name: Set up Python
+      run: uv python install 3.12
+      
+    - name: Install dependencies
+      run: uv sync
+      
+    - name: Generate documentation with pydoc
+      run: |
+        mkdir -p docs/api
+        uv run python -m pydoc -w ai_dev_graph.domain.graph
+        uv run python -m pydoc -w ai_dev_graph.domain.models
+        uv run python -m pydoc -w ai_dev_graph.domain.repositories
+        uv run python -m pydoc -w ai_dev_graph.infrastructure.hybrid_repo
+        uv run python -m pydoc -w ai_dev_graph.infrastructure.neo4j_repo
+        mv *.html docs/api/ || true
+        
+    - name: Upload documentation
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-docs
+        path: docs/api/
+        retention-days: 30
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        enable-cache: true
+        
+    - name: Set up Python
+      run: uv python install 3.12
+      
+    - name: Install dependencies
+      run: uv sync
+      
+    - name: Run tests with coverage
+      run: uv run pytest --cov=ai_dev_graph --cov-report=xml --cov-report=html tests/
+      env:
+        DATABASE_TYPE: sqlite
+        
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: htmlcov/
+        retention-days: 30
