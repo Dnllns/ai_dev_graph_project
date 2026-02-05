@@ -209,10 +209,11 @@ jobs:
     - name: Set up Python
       run: uv python install 3.12
       
+    - name: Install dependencies
+      run: uv sync
+      
     - name: Install analysis tools
-      run: |
-        uv pip install radon
-        uv pip install mccabe
+      run: uv pip install radon mccabe
         
     - name: Run Radon complexity analysis
       run: |

@@ -10,7 +10,7 @@ import pytest
 def test_activity_logs_audit_simple():
     """
     Simple test to verify Activity Logs section exists and displays data.
-    
+
     This test should be run manually with browser_subagent for visual validation.
     """
     # Test instructions for manual execution with browser_subagent:
@@ -21,7 +21,7 @@ def test_activity_logs_audit_simple():
     # 5. Verify at least some log entries are present
     # 6. Create a new node
     # 7. Return to logs and verify new entry appears
-    
+
     # For automated execution, this is a placeholder
     # The actual browser automation is done via browser_subagent tool
     pass
@@ -30,7 +30,7 @@ def test_activity_logs_audit_simple():
 def manual_logs_audit_checklist():
     """
     Manual checklist for logs audit (to be executed with browser_subagent):
-    
+
     - [ ] Navigate to /admin
     - [ ] Click Logs navigation button
     - [ ] Verify logs section is visible
@@ -52,9 +52,9 @@ def manual_logs_audit_checklist():
         "Create test node",
         "Verify new log entry",
         "Check timestamp format",
-        "Check action description", 
+        "Check action description",
         "Test scrolling",
-        "Test navigation persistence"
+        "Test navigation persistence",
     ]
     return checklist
 
