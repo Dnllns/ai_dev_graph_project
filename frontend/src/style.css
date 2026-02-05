@@ -262,8 +262,21 @@ h2#section-title {
     bottom: 24px;
     left: 24px;
     width: 280px;
-    max-height: 300px;
-    overflow-y: auto;
+    /* Removed max-height/overflow for custom collapse logic */
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.panel-header:hover {
+    color: var(--primary);
 }
 
 .legend-panel {

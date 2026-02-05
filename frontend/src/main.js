@@ -20,8 +20,7 @@ let svg;
 let g;
 let graphData = { nodes: [], links: [] };
 let linkedByIndex = {};
-let neighborMap = {}; // Adjacency list for fast lookup
-let activeFilters = new Set(Object.keys(NODE_COLORS)); // All visible by default
+let activeFilters = new Set(Object.keys(NODE_COLORS));
 
 // DOM Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,31 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initFilters();
   loadGraphVisualization();
 
-  // Global Search Handler
-  window.handleGlobalSearch = function (query) {
-    query = query.toLowerCase();
-
-    // Filter in Graph View
-    if (query.length > 0) {
-      d3.selectAll(".node").each(function (d) {
-        // Check content match AND filter visibility
-        const typeVisible = activeFilters.has(d.data.type || 'default');
-        const match = (d.id.toLowerCase().includes(query) || (d.data.content && d.data.content.toLowerCase().includes(query)));
-
-        d3.select(this)
-          .classed("dimmed", !match || !typeVisible)
-          .classed("highlighted", match && typeVisible);
-      });
-      d3.selectAll(".link").classed("dimmed", true);
-    } else {
-      resetHighlight();
-    }
-
-    // Filter in Library View
-    if (document.getElementById('nodes').classList.contains('active')) {
-      window.filterNodesLib(query);
-    }
-  };
+  // Make settings panel open by default or logic? Let's start closed for cleaner view
+  // No, standard is usually open or minimal. Let's toggle it open initially to show features
+  // document.getElementById('settings-content').style.maxHeight = '500px'; 
+  // Actually user asked for collapsed improvement, let's keep it closed or minimal.
+  // Let's rely on user click.
 });
 
 window.addEventListener('resize', () => {
@@ -62,9 +41,24 @@ window.addEventListener('resize', () => {
   }
 });
 
-// --- Initialization Helpers ---
+// --- UI Logic ---
 
-function initLegend() {
+window.toggleSettingsPanel = function () {
+  const content = document.getElementById('settings-content');
+  const chevron = document.getElementById('settings-chevron');
+
+  if (content.style.maxHeight === '0px' || !content.style.maxHeight) {
+    content.style.maxHeight = '500px'; // Approx max height
+    content.style.opacity = '1';
+    chevron.style.transform = 'rotate(180deg)';
+  } else {
+    content.style.maxHeight = '0px';
+    content.style.opacity = '0';
+    chevron.style.transform = 'rotate(0deg)';
+  }
+}
+
+window.initLegend = function () {
   const legendContainer = document.getElementById('legend');
   if (!legendContainer) return;
 
@@ -85,7 +79,7 @@ function initLegend() {
   });
 }
 
-function initFilters() {
+window.initFilters = function () {
   const container = document.getElementById('filter-controls');
   if (!container) return;
 
@@ -110,7 +104,7 @@ window.showSection = function (id) {
 
   document.getElementById(id).classList.add('active');
 
-  // Find nav item (hacky but works)
+  // Update Sidebar state
   const navItems = document.querySelectorAll('.nav-item');
   if (id === 'dashboard') navItems[0].classList.add('active');
   if (id === 'nodes') navItems[1].classList.add('active');
@@ -156,20 +150,10 @@ window.loadGraphVisualization = async function () {
     document.getElementById('totalEdges').textContent = graphData.links.length;
     document.getElementById('density').textContent = (rawData.density || 0).toFixed(4);
 
-    // Prep Connectivity Index & Neighbor Map
+    // Prep Connectivity Index
     linkedByIndex = {};
-    neighborMap = {};
-
-    graphData.nodes.forEach(n => neighborMap[n.id] = new Set());
-
     graphData.links.forEach(d => {
       linkedByIndex[`${d.source},${d.target}`] = 1;
-      // Note: d.source/target are IDs initially, then objects after simulation starts
-      // We use IDs for initial map
-      if (!neighborMap[d.source]) neighborMap[d.source] = new Set();
-      if (!neighborMap[d.target]) neighborMap[d.target] = new Set();
-      neighborMap[d.source].add(d.target);
-      neighborMap[d.target].add(d.source);
     });
 
     renderGraph();
@@ -208,7 +192,7 @@ function renderGraph() {
     .force("link", d3.forceLink(graphData.links).id(d => d.id).distance(linkDistVal))
     .force("charge", d3.forceManyBody().strength(chargeVal))
     .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("collide", d3.forceCollide().radius(35)); // Slightly larger collision
+    .force("collide", d3.forceCollide().radius(35));
 
   // Arrow Marker
   svg.append("defs").selectAll("marker")
@@ -231,6 +215,8 @@ function renderGraph() {
     .data(graphData.links)
     .enter().append("line")
     .attr("class", "link")
+    .attr("stroke", "var(--border)") // Add explicit stroke for export compatibility
+    .attr("stroke-opacity", 0.3)
     .attr("marker-end", "url(#arrow)");
 
   // Nodes
@@ -246,14 +232,14 @@ function renderGraph() {
       .on("drag", dragged)
       .on("end", dragended))
     .on("click", nodeClicked)
+    .on("dblclick", focusNode) // New Feature
     .on("mouseover", function (event, d) {
-      // Tooltip Logic
       tooltip.transition().duration(200).style("opacity", 1);
       tooltip.html(`
                 <strong style="color:${NODE_COLORS[d.data.type]}">${d.id}</strong><br/>
                 <span style="color:#94a3b8; font-size:0.75rem">${d.data.type.toUpperCase()}</span><br/>
                 <div style="margin-top:4px; font-size:0.75rem; color:#cbd5e1; max-height:60px; overflow:hidden;">
-                    ${d.data.content ? d.data.content.slice(0, 80) + (d.data.content.length > 80 ? '...' : '') : ''}
+                    ${d.data.content ? d.data.content.slice(0, 80) : ''}
                 </div>
             `)
         .style("left", (event.pageX + 15) + "px")
@@ -266,17 +252,20 @@ function renderGraph() {
   node.append("circle")
     .attr("r", d => d.id.startsWith("role_") ? 16 : 10)
     .attr("fill", d => NODE_COLORS[d.data?.type] || NODE_COLORS.default)
-    // Add glow effect via simplified shadow
+    .attr("stroke", "#0f172a") // Explicit stroke for export
+    .attr("stroke-width", 2)
     .style("filter", d => `drop-shadow(0 0 4px ${NODE_COLORS[d.data?.type] || NODE_COLORS.default})`);
 
   node.append("text")
     .attr("dx", 16)
     .attr("dy", 4)
-    .text(d => d.id);
+    .text(d => d.id)
+    .style("fill", "#94a3b8") // Explicit fill for export
+    .style("font-size", "10px")
+    .style("font-family", "sans-serif");
 
   // Simulation Tick
   simulation.on("tick", () => {
-    // Only update visible nodes positions for performance? No, d3 needs all
     link
       .attr("x1", d => d.source.x)
       .attr("y1", d => d.source.y)
@@ -314,74 +303,48 @@ function isConnected(a, b) {
 
 function nodeClicked(event, d) {
   event.stopPropagation();
+  d3.select("#graph-tooltip").style("opacity", 0);
 
-  const tooltip = d3.select("#graph-tooltip");
-  tooltip.style("opacity", 0); // Hide tooltip on click to avoid overlap
-
-  // Highlight Neighbors (Level 1) & Level 2
-  // We want: Selected Node -> Highlighted 100%
-  // Neighbors (L1) -> Highlighted 100%
-  // Neighbors of Neighbors (L2) -> Highlighted 50% ? Or just L1 for clarity.
-  // Let's stick to L1 for strong clarity first, maybe L2 later if requested. The user said "mas capacidades"
-
-  // Let's try 2nd degree neighbors
-  const neighborsL1 = new Set();
-  // Re-scanning links or using neighborMap (need to rebuild map with object references after sim start)
-  // Actually d.index is safe.
-
-  // Simplest: Iterate all lines
+  // Highlight L1 Neighbors
+  const neighbors = new Set();
   d3.selectAll(".link").each(function (l) {
-    if (l.source.id === d.id) neighborsL1.add(l.target.id);
-    if (l.target.id === d.id) neighborsL1.add(l.source.id);
-  });
-
-  const neighborsL2 = new Set();
-  d3.selectAll(".link").each(function (l) {
-    if (neighborsL1.has(l.source.id) && l.target.id !== d.id) neighborsL2.add(l.target.id);
-    if (neighborsL1.has(l.target.id) && l.source.id !== d.id) neighborsL2.add(l.source.id);
+    if (l.source.id === d.id) neighbors.add(l.target.id);
+    if (l.target.id === d.id) neighbors.add(l.source.id);
   });
 
   d3.selectAll(".node").classed("dimmed", true).classed("highlighted", false).attr("opacity", 0.1);
 
   d3.selectAll(".node")
-    .filter(n => n.id === d.id || neighborsL1.has(n.id))
+    .filter(n => n.id === d.id || neighbors.has(n.id))
     .classed("dimmed", false)
     .classed("highlighted", true)
     .attr("opacity", 1);
 
-  d3.selectAll(".node")
-    .filter(n => neighborsL2.has(n.id) && !neighborsL1.has(n.id) && n.id !== d.id)
-    .classed("dimmed", false)
-    .attr("opacity", 0.4); // L2 is semi-visible
-
   d3.selectAll(".link").classed("dimmed", true).attr("opacity", 0.05);
-
   d3.selectAll(".link")
-    .filter(l => (l.source.id === d.id || l.target.id === d.id)) // Direct links
+    .filter(l => (l.source.id === d.id || l.target.id === d.id))
     .classed("dimmed", false)
     .attr("opacity", 1);
 
-  // Show details
   window.showDetails(d);
 }
 
-function resetHighlight() {
-  d3.selectAll(".node")
-    .classed("dimmed", false)
-    .classed("highlighted", false)
-    .attr("opacity", 1)
-    .style("display", d => activeFilters.has(d.data.type) ? "block" : "none");
+function focusNode(event, d) {
+  event.stopPropagation();
+  const width = document.getElementById('graph-container').clientWidth;
+  const height = document.getElementById('graph-container').clientHeight;
 
-  d3.selectAll(".link")
-    .classed("dimmed", false)
-    .classed("highlighted", false)
-    .attr("opacity", 1)
-    .style("display", l => (activeFilters.has(l.source.data.type) && activeFilters.has(l.target.data.type)) ? "block" : "none");
-
-  window.closeModal();
+  svg.transition().duration(1000).call(
+    zoom.transform,
+    d3.zoomIdentity.translate(width / 2, height / 2).scale(2).translate(-d.x, -d.y)
+  );
 }
 
-// --- Controls ---
+function resetHighlight() {
+  d3.selectAll(".node").classed("dimmed", false).classed("highlighted", false).attr("opacity", 1).style("display", d => activeFilters.has(d.data.type) ? "block" : "none");
+  d3.selectAll(".link").classed("dimmed", false).classed("highlighted", false).attr("opacity", 1).style("display", l => (activeFilters.has(l.source.data.type) && activeFilters.has(l.target.data.type)) ? "block" : "none");
+  window.closeModal();
+}
 
 window.toggleFilter = function (type) {
   if (activeFilters.has(type)) {
@@ -389,10 +352,8 @@ window.toggleFilter = function (type) {
   } else {
     activeFilters.add(type);
   }
-  updateVisibility();
-}
 
-function updateVisibility() {
+  // Update graph visibility
   d3.selectAll(".node").style("display", d => activeFilters.has(d.data.type || 'default') ? "block" : "none");
   d3.selectAll(".link").style("display", d => (activeFilters.has(d.source.data.type) && activeFilters.has(d.target.data.type)) ? "block" : "none");
 }
@@ -416,17 +377,48 @@ window.updateForce = function (type, value) {
   simulation.alpha(0.3).restart();
 }
 
+window.exportGraphPng = function () {
+  const svgNode = document.querySelector("#graph-container svg");
+  if (!svgNode) return;
+
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svgNode);
+
+  // Add specific namespaces if missing
+  if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = svgNode.clientWidth * 2; // High res
+  canvas.height = svgNode.clientHeight * 2;
+  const ctx = canvas.getContext("2d");
+
+  const img = new Image();
+  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+  img.onload = () => {
+    ctx.fillStyle = "#0f172a"; // Background color
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const a = document.createElement("a");
+    a.download = "nexus_graph.png";
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+  };
+}
+
 // --- Details & Modals ---
 
 window.showDetails = function (d) {
   const nodeData = d.data || d;
-  const content = nodeData.content || (d.data ? d.data.content : "No content");
-  const type = nodeData.type || (d.data ? d.data.type : "Unknown");
-  const id = d.id;
+  const content = nodeData.content || "No content";
+  const type = nodeData.type || "Unknown";
 
   document.getElementById('details-type').textContent = type;
   document.getElementById('details-type').style.color = NODE_COLORS[type] || NODE_COLORS.default;
-  document.getElementById('details-title').textContent = id;
+  document.getElementById('details-title').textContent = d.id;
   document.getElementById('details-text').textContent = content;
   document.getElementById('details-meta').textContent = JSON.stringify(nodeData.metadata || {}, null, 2);
   document.getElementById('details-panel').style.display = 'flex';
@@ -436,7 +428,7 @@ window.closeModal = function () {
   document.getElementById('details-panel').style.display = 'none';
 };
 
-// --- Library & Other Sections ---
+// --- Library ---
 
 window.loadNodesList = async function () {
   const res = await fetch('/nodes');
@@ -468,11 +460,12 @@ window.fetchNodeDetails = async function (id) {
 };
 
 window.createNode = async function () {
+  // Basic impl
   const id = document.getElementById('nodeId').value;
   const type = document.getElementById('nodeType').value;
   const content = document.getElementById('nodeContent').value;
 
-  if (!id || !content) return alert("ID and Content required");
+  if (!id || !content) return alert("Required fields missing");
 
   try {
     await fetch('/nodes', {
@@ -480,11 +473,10 @@ window.createNode = async function () {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, type, content, metadata: {} })
     });
-    alert("Created!");
+    alert("Success");
     document.getElementById('nodeId').value = "";
-    document.getElementById('nodeContent').value = "";
   } catch (e) {
-    alert("Error creating node");
+    alert("Error");
   }
 };
 
