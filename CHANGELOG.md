@@ -1,5 +1,19 @@
 ## v0.4.0 (2026-02-05)
 
+### Feat
+
+- add advanced MCP server with enhanced graph capabilities
+
+### Fix
+
+- resolve all CI/CD pipeline failures
+
+### Refactor
+
+- extract MCP server to standalone package packages/ai_dev_graph_mcp
+
+## v0.4.0 (2026-02-05)
+
 ### BREAKING CHANGE
 
 - Default database type changed from neo4j to hybrid
