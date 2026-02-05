@@ -6,15 +6,14 @@ from rich.console import Console
 from rich.table import Table
 from rich.tree import Tree
 from rich.panel import Panel
-from rich import print as rprint
 
-from ai_dev_graph.advanced_mcp import get_advanced_mcp_server
+from ai_dev_graph_mcp.server import get_advanced_mcp_server
 
 console = Console()
 
 
 @click.group(name="graph")
-def graph_commands():
+def main():
     """Advanced graph exploration and analysis commands."""
     pass
 
@@ -349,4 +348,4 @@ def show_metrics(output_json):
 
 
 if __name__ == "__main__":
-    graph_commands()
+    main()

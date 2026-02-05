@@ -1,7 +1,7 @@
 """Tests for Advanced MCP Server functionality."""
 
 import pytest
-from ai_dev_graph.advanced_mcp import AdvancedMCPServer
+from ai_dev_graph_mcp.server import AdvancedMCPServer
 from ai_dev_graph.application.manager import GraphManager
 from ai_dev_graph.domain.models import NodeData, NodeType
 

@@ -7,7 +7,7 @@ from collections import defaultdict, deque
 import re
 
 from ai_dev_graph.application.manager import GraphManager, get_graph_manager
-from ai_dev_graph.waterfall_tracker import WaterfallTracker, WaterfallStage
+from ai_dev_graph.waterfall_tracker import WaterfallTracker
 from ai_dev_graph.domain.models import NodeType
 
 logger = logging.getLogger(__name__)
@@ -60,25 +60,28 @@ class AdvancedMCPServer:
             if not node_data:
                 continue
 
-            # Apply filter if provided
+            # Check if node matches filter criteria, but continue traversal regardless
+            matches_filter = True
             if node_filter:
                 if "type" in node_filter and node_data.type.value != node_filter["type"]:
-                    continue
+                    matches_filter = False
                 if "content_match" in node_filter:
                     if node_filter["content_match"].lower() not in node_data.content.lower():
-                        continue
+                        matches_filter = False
 
-            nodes_by_depth[depth].append(
-                {
-                    "id": node_id,
-                    "type": node_data.type.value,
-                    "content": node_data.content[:200],
-                    "metadata": node_data.metadata,
-                }
-            )
+            if matches_filter:
+                nodes_by_depth[depth].append(
+                    {
+                        "id": node_id,
+                        "type": node_data.type.value,
+                        "content": node_data.content[:200],
+                        "metadata": node_data.metadata,
+                    }
+                )
 
             if depth == max_depth:
-                paths.append(current_path)
+                if matches_filter:
+                    paths.append(current_path)
                 continue
 
             # Get neighbors based on direction
